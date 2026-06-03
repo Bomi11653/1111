@@ -16,7 +16,30 @@
 
 ---
 
-## 已写入的个人信息
+## 视觉与动效（首页升级版）
+
+首页采用 **图2 影院 Hero + 图1 长滚动章节** 结构，集成以下开源方案：
+
+| 效果 | 实现 | 来源/灵感 |
+|------|------|-----------|
+| 平滑滚动 | [Lenis](https://github.com/ddarko/lenis) | 顶级 smooth scroll 库 |
+| 文字动效 | [Framer Motion](https://github.com/framer/motion) 逐字 reveal | 行业主流 React 动效 |
+| 艺术字 | 描边 / 水印 / 渐变流动字 | `ArtisticText.tsx` |
+| 流动背景 | Canvas 渐变 blob 动画 | 自研（类似 Stripe/Codrops mesh） |
+| 自定义鼠标 | Framer Motion spring 磁吸光标 | 高端作品集常见交互 |
+| 左侧进度 | Intersection Observer 章节指示 | 参考图1 侧边导航 |
+| 右侧竖排 | 固定竖排社交文字 | 参考图1 编辑式排版 |
+| 字体 | Noto Serif SC + Inter | Google Fonts |
+
+相关文件：
+
+- `src/components/home/HomePage.tsx` — 首页全部章节
+- `src/components/effects/` — 背景、光标、滚动、文字动效
+- `src/app/globals.css` — 艺术字样式、玻璃面板、噪点纹理
+
+首页章节锚点：`#hero` · `#story` · `#works` · `#about` · `#contact`
+
+---
 
 | 字段 | 内容 |
 |------|------|

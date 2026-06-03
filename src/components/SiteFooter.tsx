@@ -1,8 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { site } from "@/data/site";
 
 export function SiteFooter() {
+  const pathname = usePathname();
   const year = new Date().getFullYear();
+
+  if (pathname === "/about") return null;
+
   return (
     <footer className="border-t border-border mt-auto">
       <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col sm:flex-row justify-between gap-4 text-sm text-muted">

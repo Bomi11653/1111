@@ -1,20 +1,9 @@
 import type { Metadata } from "next";
-import { Outfit, Syne } from "next/font/google";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { Providers } from "@/components/effects/Providers";
 import { site } from "@/data/site";
 import "./globals.css";
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
-
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -36,13 +25,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={`${outfit.variable} ${syne.variable} h-full`}>
+    <html lang="zh-CN" className="h-full">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600;700;900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-full flex flex-col antialiased relative">
-        <div className="relative z-10 flex flex-col min-h-full">
-          <SiteHeader />
-          <main className="flex-1 pt-16">{children}</main>
-          <SiteFooter />
-        </div>
+        <Providers>
+          <div className="relative z-10 flex flex-col min-h-full">
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </div>
+        </Providers>
       </body>
     </html>
   );

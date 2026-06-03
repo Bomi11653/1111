@@ -5,10 +5,10 @@ type Variant = "primary" | "secondary" | "ghost";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent text-background hover:bg-accent-dim border border-accent/30",
+    "bg-primary text-[#050507] hover:bg-accent-dim border border-primary/40 shadow-[0_0_24px_var(--accent-glow)] hover:-translate-y-0.5",
   secondary:
-    "bg-surface-elevated text-foreground border border-border hover:border-accent/50",
-  ghost: "text-muted hover:text-accent border border-transparent",
+    "bg-surface-elevated text-foreground border border-border hover:border-primary/40 hover:-translate-y-0.5",
+  ghost: "text-muted hover:text-primary border border-transparent",
 };
 
 export function Button({
@@ -29,7 +29,7 @@ export function Button({
   type?: "button" | "submit";
 }) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+    "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium tracking-wide transition-all duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
   const classes = `${base} ${variants[variant]} ${className}`;
 

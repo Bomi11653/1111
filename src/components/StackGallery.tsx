@@ -16,10 +16,6 @@ export function StackGallery({ items, linkFeatured = true }: Props) {
 
   return (
     <div className="relative mx-auto max-w-4xl">
-      <p className="text-muted text-sm mb-8 text-center">
-        点击卡片切换层级 · Featured 项目可进入详情
-      </p>
-
       <div className="relative h-[420px] sm:h-[480px] md:h-[520px]">
         {items.map((item, index) => {
           const offset = index - activeIndex;

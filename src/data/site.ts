@@ -5,6 +5,10 @@ export const site = {
   tagline: "专注 3D 环境艺术",
   headline: "用光影和细节打造沉浸式游戏世界",
   email: "3311078363@qq.com",
+  location: {
+    base: "BASE",
+    city: "广东 东莞",
+  },
   resumeFilename: "郑荣成-游戏场景设计师-简历.pdf",
   resumePath: "/resume/郑荣成-游戏场景设计师-简历.pdf",
   social: {
