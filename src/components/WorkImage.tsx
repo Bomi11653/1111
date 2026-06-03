@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
+
+const PLACEHOLDER = "/works/placeholder.svg";
 
 type Props = {
   src: string;
@@ -17,38 +18,22 @@ export function WorkImage({
   alt,
   fill,
   className = "",
-  priority,
-  sizes = "(max-width: 768px) 100vw, 50vw",
 }: Props) {
   const [failed, setFailed] = useState(false);
-
-  if (failed || !src) {
-    return (
-      <div
-        className={`flex items-center justify-center bg-surface-elevated ${fill ? "absolute inset-0" : "aspect-video w-full"} ${className}`}
-        role="img"
-        aria-label={alt}
-      >
-        <div className="text-center px-6">
-          <p className="text-accent/80 text-xs uppercase tracking-[0.2em] mb-2">
-            待上传作品图
-          </p>
-          <p className="text-muted text-sm max-w-xs">{alt}</p>
-        </div>
-      </div>
-    );
-  }
+  const resolvedSrc = failed || !src ? PLACEHOLDER : src;
 
   return (
-    <Image
-      src={src}
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={resolvedSrc}
       alt={alt}
-      fill={fill}
-      width={fill ? undefined : 1200}
-      height={fill ? undefined : 675}
-      className={`object-cover ${className}`}
-      priority={priority}
-      sizes={sizes}
+      className={
+        fill
+          ? `absolute inset-0 h-full w-full object-cover ${className}`
+          : `w-full ${className.includes("object-") ? "" : "object-cover "}${className}`
+      }
+      loading="lazy"
+      decoding="async"
       onError={() => setFailed(true)}
     />
   );

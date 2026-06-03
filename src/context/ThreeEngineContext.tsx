@@ -9,7 +9,7 @@ import {
   useRef,
   type RefObject,
 } from "react";
-import { getThreeEngine } from "@/core/three/engine";
+import { disposeThreeEngine, getThreeEngine } from "@/core/three/engine";
 import { getSceneModule } from "@/core/three/scenes";
 import type { SceneId, SceneState } from "@/core/three/types";
 
@@ -26,6 +26,8 @@ export function ThreeEngineProvider({ children }: { children: React.ReactNode })
   const activate = useCallback(
     (id: SceneId, container: HTMLElement, stateRef: RefObject<SceneState>) => {
       const engine = getThreeEngine();
+      if (!engine) return;
+
       activeIdRef.current = id;
       engine.bindState(stateRef);
       engine.mount(container);
@@ -38,6 +40,8 @@ export function ThreeEngineProvider({ children }: { children: React.ReactNode })
   const deactivate = useCallback((id: SceneId) => {
     if (activeIdRef.current !== id) return;
     const engine = getThreeEngine();
+    if (!engine) return;
+
     engine.stop();
     engine.clear();
     activeIdRef.current = null;
@@ -45,13 +49,7 @@ export function ThreeEngineProvider({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     return () => {
-      try {
-        const engine = getThreeEngine();
-        engine.stop();
-        engine.clear();
-      } catch {
-        // SSR / already disposed
-      }
+      disposeThreeEngine();
     };
   }, []);
 

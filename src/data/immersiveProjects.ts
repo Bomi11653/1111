@@ -1,33 +1,43 @@
-/** Three.js 联动视觉 — 色相偏移随生成式主题变化 */
+import { getFeaturedWorks, getWorkBySlug } from "@/data/worksCatalog";
+
+const baseFor = (slug: string) =>
+  slug === "blender-ark" ? "/works/blender-ark" : "/works/bing-suo-han-chuan";
+
+/** 作品页列表 + 右侧海报预览 */
 export type ImmersiveVisual = {
   slug: string;
   title: string;
   subtitle: string;
+  tagline: string;
+  summary: string;
   year: string;
-  /** 相对主题 hue 的偏移（度） */
+  cover: string;
+  /** 作品页右侧竖版海报 URL */
+  stagePosters: string[];
   hueOffset: number;
   speed: number;
 };
 
-export const immersiveVisuals: ImmersiveVisual[] = [
-  {
-    slug: "blender-ark",
-    title: "blender 方舟",
-    subtitle: "科幻概念 · 游戏场景",
-    year: "2025",
-    hueOffset: 0,
-    speed: 1.05,
-  },
-  {
-    slug: "bing-suo-han-chuan",
-    title: "冰锁寒川",
-    subtitle: "科幻概念 · 寒域环境",
-    year: "2025",
-    hueOffset: -14,
-    speed: 0.82,
-  },
-];
+function toVisual(slug: string): ImmersiveVisual {
+  const entry = getWorkBySlug(slug)!;
+  const base = baseFor(slug);
+  return {
+    slug: entry.slug,
+    title: entry.title,
+    subtitle: entry.subtitle,
+    tagline: entry.tagline,
+    summary: entry.summary,
+    year: entry.year,
+    cover: entry.cover,
+    stagePosters: entry.stagePosters.map((p) => `${base}/${p.file}`),
+    hueOffset: entry.hueOffset,
+    speed: entry.speed,
+  };
+}
+
+export const immersiveVisuals: ImmersiveVisual[] = getFeaturedWorks().map((w) => toVisual(w.slug));
 
 export function getImmersiveVisual(slug: string): ImmersiveVisual | undefined {
-  return immersiveVisuals.find((v) => v.slug === slug);
+  const entry = getWorkBySlug(slug);
+  return entry ? toVisual(slug) : undefined;
 }

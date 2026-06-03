@@ -8,7 +8,6 @@ import { HomeAmbientLayer } from "@/components/home/HomeAmbientLayer";
 import { ScrollProgress, VerticalSocial } from "@/components/effects/ScrollProgress";
 import { SplitReveal } from "@/components/effects/SplitReveal";
 import { ImmersiveFeaturedCard } from "@/components/ImmersiveFeaturedCard";
-import { MusicPlayerWidget } from "@/components/MusicPlayerWidget";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/context/LocaleContext";
 import type { SceneState } from "@/core/three/types";
@@ -20,8 +19,8 @@ import { DURATION, EASE_OUT } from "@/lib/motion";
 const timeline = [
   {
     year: "2025",
-    zh: "blender 方舟 · 科幻概念场景 · 4 周独立制作",
-    en: "Blender Ark · sci-fi concept · 4 weeks solo",
+    zh: "方舟 · 播种计划 · 方舟-7 · 4 周独立制作",
+    en: "Ark-7 · Seeding Initiative · 4 weeks solo",
   },
   {
     year: "2025",
@@ -76,12 +75,11 @@ export function HomePage() {
       <div className="relative z-10">
         <ScrollProgress />
         <VerticalSocial />
-        <MusicPlayerWidget />
 
-        <ArtisticHero />
+        <ArtisticHero onMenuHoverBoost={narrative.setHoverBoost} />
 
         <section
-          id="showcase"
+          id="portfolio-section"
           className="relative py-28 md:py-36 border-t border-border/30 scroll-story-section"
         >
           <RevealBlock>
@@ -90,7 +88,7 @@ export function HomePage() {
         </section>
 
         <section
-          id="intro"
+          id="about-section"
           className="relative py-28 md:py-36 border-t border-border/30 scroll-story-section"
         >
           <div className="mx-auto max-w-3xl px-6 lg:px-12">
@@ -106,7 +104,7 @@ export function HomePage() {
             <RevealBlock delay={0.14} className="mt-16 space-y-0">
               {timeline.map((entry, i) => (
                 <div
-                  key={entry.year}
+                  key={`${entry.year}-${i}`}
                   className={`flex gap-8 md:gap-12 py-9 ${
                     i < timeline.length - 1 ? "border-b border-border/40" : ""
                   }`}

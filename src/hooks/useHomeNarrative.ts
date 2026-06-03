@@ -10,6 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export type HomeNarrativeController = {
   setHover: (hovered: boolean) => void;
+  setHoverBoost: (boost: number) => void;
 };
 
 export function useHomeNarrative(
@@ -85,10 +86,10 @@ export function useHomeNarrative(
     };
   }, [pageRef, stateRef]);
 
-  const setHover = (hovered: boolean) => {
+  const setHoverBoost = (target: number) => {
     hoverTween.current?.kill();
     hoverTween.current = gsap.to(hoverBoost.current, {
-      value: hovered ? 0.38 : 0,
+      value: target,
       duration: DURATION.shader,
       ease: EASE_PREMIUM,
       onUpdate: () => {
@@ -97,5 +98,9 @@ export function useHomeNarrative(
     });
   };
 
-  return { setHover };
+  const setHover = (hovered: boolean) => {
+    setHoverBoost(hovered ? 0.38 : 0);
+  };
+
+  return { setHover, setHoverBoost };
 }

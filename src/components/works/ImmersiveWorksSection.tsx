@@ -1,56 +1,41 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { usePageTransition } from "@/context/PageTransitionContext";
 import { immersiveVisuals, type ImmersiveVisual } from "@/data/immersiveProjects";
 import { getProjectColorsFromThemeHue } from "@/lib/color/projectColors";
 import { useTheme } from "@/lib/color/ThemeProvider";
-import { WorksThreeCanvas } from "./WorksThreeCanvas";
+import { WorksPosterStage } from "./WorksPosterStage";
 
 export function ImmersiveWorksSection() {
-  const router = useRouter();
-  const { startProjectTransition, isTransitioning } = usePageTransition();
+  const { startNavReveal, isTransitioning } = usePageTransition();
   const theme = useTheme();
   const [active, setActive] = useState<ImmersiveVisual>(immersiveVisuals[0]);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
-  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const displaySlug = hoveredSlug ?? active.slug;
   const displayProject = immersiveVisuals.find((p) => p.slug === displaySlug) ?? active;
+  const isEngaged = hoveredSlug !== null || active.slug === displayProject.slug;
 
   const handleEnter = (project: ImmersiveVisual) => {
-    const el = itemRefs.current[project.slug];
-    const rect = el?.getBoundingClientRect();
-    const href = `/works/${project.slug}`;
-    const colors = getProjectColorsFromThemeHue(theme.hue, project.hueOffset);
+    if (isTransitioning) return;
 
-    if (!rect || isTransitioning) {
-      router.push(href);
-      return;
-    }
-
-    startProjectTransition(
+    startNavReveal(
       {
-        x: rect.left,
-        y: rect.top,
-        w: rect.width,
-        h: rect.height,
-        color: colors.color,
-        secondaryColor: colors.secondaryColor,
-        slug: project.slug,
+        label: project.title,
+        meta: `${project.year} — ${project.subtitle}`,
+        navId: project.slug,
       },
-      href,
+      { type: "route", href: `/works/${project.slug}` },
     );
   };
 
   return (
     <section className="immersive-works relative min-h-[85vh] lg:min-h-screen flex flex-col lg:flex-row bg-[#0a0a0a] text-white overflow-hidden">
-      <div className="absolute inset-0 z-0 lg:left-1/2 opacity-60 lg:opacity-100">
-        <WorksThreeCanvas active={displayProject} />
+      <div className="absolute inset-0 z-0 lg:left-1/2 opacity-70 lg:opacity-100">
+        <WorksPosterStage project={displayProject} engaged={isEngaged} />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/80 via-[#0a0a0a]/50 to-[#0a0a0a] z-[1] lg:bg-gradient-to-l lg:from-transparent lg:via-transparent lg:to-[#0a0a0a]/40 pointer-events-none" />
 
       <div className="relative z-10 w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-20 py-16 lg:py-24">
         <p className="text-[10px] tracking-[0.4em] text-white/35 uppercase mb-10">Works</p>
@@ -65,9 +50,6 @@ export function ImmersiveWorksSection() {
               <li key={project.slug}>
                 <button
                   type="button"
-                  ref={(el) => {
-                    itemRefs.current[project.slug] = el;
-                  }}
                   className="group block w-full text-left py-3 md:py-4 border-b border-white/5 disabled:opacity-50"
                   disabled={isTransitioning}
                   onMouseEnter={() => {

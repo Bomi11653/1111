@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { DURATION, EASE_OUT } from "@/lib/motion";
 
 type Props = {
@@ -21,11 +21,7 @@ export function SplitReveal({
 }: Props) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once, margin: "-10% 0px" });
-  const [chars, setChars] = useState<string[]>([]);
-
-  useEffect(() => {
-    setChars(Array.from(text));
-  }, [text]);
+  const chars = useMemo(() => Array.from(text), [text]);
 
   return (
     <Tag ref={ref as never} className={`split-reveal overflow-hidden ${className}`}>

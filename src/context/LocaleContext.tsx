@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, startTransition } from "react";
 import { site } from "@/data/site";
 import { translations, type Locale, type TranslationKey } from "@/data/i18n";
 
@@ -39,7 +39,11 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("locale") as Locale | null;
-    if (saved === "zh" || saved === "en") setLocaleState(saved);
+    if (saved === "zh" || saved === "en") {
+      startTransition(() => {
+        setLocaleState(saved);
+      });
+    }
   }, []);
 
   const setLocale = useCallback((next: Locale) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { usePageTransitionOptional } from "@/context/PageTransitionContext";
 import { usePageThreeScene } from "@/context/ThreeEngineContext";
 import type { SceneState } from "@/core/three/types";
@@ -23,12 +23,14 @@ export function WorksThreeCanvas({ active }: Props) {
     [theme.hue, active.hueOffset],
   );
 
-  stateRef.current = {
-    activeColor: colors.color,
-    activeSecondary: colors.secondaryColor,
-    activeSpeed: active.speed,
-    explode: transition?.explode ?? 0,
-  };
+  useLayoutEffect(() => {
+    stateRef.current = {
+      activeColor: colors.color,
+      activeSecondary: colors.secondaryColor,
+      activeSpeed: active.speed,
+      explode: transition?.explode ?? 0,
+    };
+  }, [colors.color, colors.secondaryColor, active.speed, transition?.explode]);
 
   usePageThreeScene("works", containerRef, stateRef);
 

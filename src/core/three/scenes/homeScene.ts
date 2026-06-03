@@ -59,9 +59,10 @@ export function createHomeSceneModule(): SceneModule {
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(14, 10, 1, 1), material);
       root.add(plane);
       engine.scene.add(root);
+      engine.scene.userData.shader = material;
 
       const enableBloom = typeof window !== "undefined" && window.innerWidth >= 768;
-      if (enableBloom) {
+      if (enableBloom && engine.renderer) {
         composer = new EffectComposer(engine.renderer);
         composer.addPass(new RenderPass(engine.scene, engine.camera));
         composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.32, 0.75, 0.14));
@@ -110,6 +111,7 @@ export function createHomeSceneModule(): SceneModule {
     unmount(engine) {
       engine.setComposer(null);
       composer = null;
+      delete engine.scene.userData.shader;
       if (root) {
         engine.scene.remove(root);
         disposeObject3D(root);

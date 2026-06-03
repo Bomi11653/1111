@@ -3,8 +3,15 @@
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
 
+function canUseCustomCursor() {
+  if (typeof window === "undefined") return false;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
+  return !reduced && !coarse;
+}
+
 export function CustomCursor() {
-  const [enabled, setEnabled] = useState(false);
+  const [enabled] = useState(canUseCustomCursor);
   const [visible, setVisible] = useState(false);
   const [hovering, setHovering] = useState(false);
   const x = useMotionValue(-100);
@@ -15,11 +22,8 @@ export function CustomCursor() {
   const ringY = useSpring(y, { stiffness: 150, damping: 20, mass: 0.6 });
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const coarse = window.matchMedia("(pointer: coarse)").matches;
-    if (reduced || coarse) return;
+    if (!enabled) return undefined;
 
-    setEnabled(true);
     document.body.classList.add("custom-cursor-active");
 
     const move = (e: MouseEvent) => {
@@ -40,7 +44,7 @@ export function CustomCursor() {
       window.removeEventListener("mousemove", move);
       document.documentElement.removeEventListener("mouseleave", leave);
     };
-  }, [x, y]);
+  }, [enabled, x, y]);
 
   if (!enabled) return null;
 

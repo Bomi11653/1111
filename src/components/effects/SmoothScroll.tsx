@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { useEffect } from "react";
+import { registerLenis } from "@/lib/smoothScroll";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,6 +19,9 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       smoothWheel: true,
     });
 
+    registerLenis(lenis);
+    document.documentElement.classList.add("lenis");
+
     lenis.on("scroll", ScrollTrigger.update);
 
     let raf = 0;
@@ -31,6 +35,8 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
 
     return () => {
       cancelAnimationFrame(raf);
+      registerLenis(null);
+      document.documentElement.classList.remove("lenis");
       lenis.destroy();
     };
   }, []);

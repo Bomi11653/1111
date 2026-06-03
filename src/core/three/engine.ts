@@ -8,8 +8,9 @@ type UpdateFn = (elapsed: number) => void;
 export class ThreeEngine {
   readonly scene = new THREE.Scene();
   readonly camera = new THREE.PerspectiveCamera(45, 1, 0.1, 40);
-  readonly renderer: THREE.WebGLRenderer;
+  readonly renderer: THREE.WebGLRenderer | null;
   readonly clock = new THREE.Clock();
+  readonly webglAvailable: boolean;
 
   private container: HTMLElement | null = null;
   private frameId: number | null = null;
@@ -21,16 +22,24 @@ export class ThreeEngine {
   private composer: EffectComposer | null = null;
 
   constructor() {
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
-    this.renderer.setPixelRatio(1);
-    this.renderer.setClearColor(0x000000, 0);
-    this.renderer.domElement.style.display = "block";
-    this.renderer.domElement.style.width = "100%";
-    this.renderer.domElement.style.height = "100%";
+    let renderer: THREE.WebGLRenderer | null = null;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+      renderer.setPixelRatio(1);
+      renderer.setClearColor(0x000000, 0);
+      renderer.domElement.style.display = "block";
+      renderer.domElement.style.width = "100%";
+      renderer.domElement.style.height = "100%";
+    } catch (error) {
+      console.warn("[ThreeEngine] WebGL unavailable:", error);
+    }
+
+    this.renderer = renderer;
+    this.webglAvailable = renderer !== null;
 
     if (typeof window !== "undefined") {
       window.addEventListener("pointermove", this.onPointerMove, { passive: true });
@@ -59,6 +68,8 @@ export class ThreeEngine {
   }
 
   mount(container: HTMLElement) {
+    if (!this.renderer) return;
+
     if (this.container === container && container.contains(this.renderer.domElement)) {
       this.resize();
       return;
@@ -78,6 +89,8 @@ export class ThreeEngine {
   }
 
   loadModule(module: SceneModule) {
+    if (!this.renderer) return;
+
     this.stop();
     this.clear();
     this.activeModule = module;
@@ -92,7 +105,7 @@ export class ThreeEngine {
   }
 
   start() {
-    if (this.frameId !== null) return;
+    if (!this.renderer || this.frameId !== null) return;
     this.clock.start();
     this.animate();
   }
@@ -116,13 +129,15 @@ export class ThreeEngine {
     this.stop();
     this.clear();
     this.resizeObserver?.disconnect();
-    this.renderer.dispose();
+    this.renderer?.dispose();
     if (typeof window !== "undefined") {
       window.removeEventListener("pointermove", this.onPointerMove);
     }
   }
 
   private animate = () => {
+    if (!this.renderer) return;
+
     this.frameId = requestAnimationFrame(this.animate);
     const elapsed = this.clock.getElapsedTime();
     this.updateFn?.(elapsed);
@@ -134,7 +149,7 @@ export class ThreeEngine {
   };
 
   private resize = () => {
-    if (!this.container) return;
+    if (!this.container || !this.renderer) return;
     const width = Math.max(this.container.clientWidth, 1);
     const height = Math.max(this.container.clientHeight, 1);
     this.camera.aspect = width / height;
@@ -148,12 +163,15 @@ export class ThreeEngine {
 
 let engineInstance: ThreeEngine | null = null;
 
-export function getThreeEngine() {
-  if (typeof window === "undefined") {
-    throw new Error("ThreeEngine is browser-only");
-  }
+export function getThreeEngine(): ThreeEngine | null {
+  if (typeof window === "undefined") return null;
   if (!engineInstance) {
     engineInstance = new ThreeEngine();
+    if (!engineInstance.webglAvailable) {
+      engineInstance.dispose();
+      engineInstance = null;
+      return null;
+    }
   }
   return engineInstance;
 }

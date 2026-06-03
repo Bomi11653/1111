@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { TopBarMusicBox } from "@/components/TopBarMusicBox";
 import { useLocale } from "@/context/LocaleContext";
 import { site } from "@/data/site";
 
@@ -55,11 +56,11 @@ export function SiteHeader() {
           onClick={() => setOpen(false)}
           data-cursor="hover"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 text-[10px] tracking-widest text-muted group-hover:border-accent/50 group-hover:text-accent transition-colors">
+          <span className="text-base font-bold tracking-[0.15em] text-foreground">
             ZRC
           </span>
-          <span className="hidden sm:block text-[11px] tracking-[0.2em] text-muted uppercase">
-            {site.nameEn}
+          <span className="hidden sm:block text-sm text-muted tracking-wide">
+            {site.name}
           </span>
         </Link>
 
@@ -71,7 +72,8 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
+          <TopBarMusicBox />
           <LanguageToggle className="hidden md:inline-flex" />
           <button
             type="button"

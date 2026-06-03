@@ -6,6 +6,7 @@ export type TransitionPayload = {
   color: string;
   secondaryColor: string;
   slug: string;
+  label?: string;
 };
 
 export const TRANSITION_STORAGE_KEY = "portfolio-transition";

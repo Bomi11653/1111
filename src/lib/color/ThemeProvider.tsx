@@ -3,7 +3,6 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -31,16 +30,16 @@ function fallbackTheme(): GeneratedTheme {
   };
 }
 
+function createInitialTheme(): GeneratedTheme {
+  if (typeof window === "undefined") return fallbackTheme();
+  const next = generateTheme();
+  setActiveTheme(next);
+  applyThemeToDocument(next);
+  return next;
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<GeneratedTheme>(fallbackTheme);
-
-  useEffect(() => {
-    const next = generateTheme();
-    setTheme(next);
-    setActiveTheme(next);
-    applyThemeToDocument(next);
-  }, []);
-
+  const [theme] = useState<GeneratedTheme>(createInitialTheme);
   const value = useMemo(() => ({ theme }), [theme]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

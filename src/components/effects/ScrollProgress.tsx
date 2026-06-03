@@ -2,11 +2,12 @@
 
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
+import { scrollToElement } from "@/lib/smoothScroll";
 
 const sections = [
   { id: "hero", label: "01" },
-  { id: "showcase", label: "02" },
-  { id: "intro", label: "03" },
+  { id: "portfolio-section", label: "02" },
+  { id: "about-section", label: "03" },
   { id: "contact", label: "04" },
 ];
 
@@ -37,7 +38,7 @@ export function ScrollProgress() {
   }, []);
 
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    scrollToElement(id);
   };
 
   return (
