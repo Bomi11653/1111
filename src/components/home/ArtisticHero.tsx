@@ -7,14 +7,13 @@ import { PinIcon } from "@/components/icons/ContactIcons";
 import { MenuArt } from "@/components/home/MenuArt";
 import { useLocale } from "@/context/LocaleContext";
 import { DURATION, EASE_PREMIUM } from "@/lib/motion";
-import { site } from "@/data/site";
 
 type Props = {
   onMenuHoverBoost?: (boost: number) => void;
 };
 
 export function ArtisticHero({ onMenuHoverBoost }: Props) {
-  const { t } = useLocale();
+  const { t, siteText, site } = useLocale();
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -89,7 +88,7 @@ export function ArtisticHero({ onMenuHoverBoost }: Props) {
         </p>
         <PinIcon className="text-primary shrink-0" />
         <p className="text-sm text-white/45 tracking-[0.15em]">
-          {site.location.city.replace(" ", "，")}
+          {siteText.locationCity}
         </p>
       </div>
 

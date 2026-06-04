@@ -45,6 +45,8 @@ export type Project = {
 export {
   galleryItems,
   featuredProjects,
+  getGalleryItems,
+  getFeaturedProjects,
   getProjectBySlug,
   getFeaturedGallery,
   getHomePreview,

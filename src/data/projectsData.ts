@@ -1,3 +1,4 @@
+import type { Locale } from "@/data/i18n";
 import type { GalleryItem, Project } from "@/data/projects";
 import {
   getFeaturedWorks,
@@ -6,19 +7,29 @@ import {
   toGalleryItem,
 } from "@/data/worksCatalog";
 
-export const galleryItems: GalleryItem[] = getFeaturedWorks().map(toGalleryItem);
+export function getGalleryItems(locale: Locale = "zh"): GalleryItem[] {
+  return getFeaturedWorks(locale).map(toGalleryItem);
+}
 
-export const featuredProjects: Project[] = getFeaturedWorks().map(toFeaturedProject);
+export function getFeaturedProjects(locale: Locale = "zh"): Project[] {
+  return getFeaturedWorks(locale).map(toFeaturedProject);
+}
 
-export function getProjectBySlug(slug: string): Project | undefined {
-  const entry = getWorkBySlug(slug);
+export function getProjectBySlug(slug: string, locale: Locale = "zh"): Project | undefined {
+  const entry = getWorkBySlug(slug, locale);
   return entry ? toFeaturedProject(entry) : undefined;
 }
 
-export function getFeaturedGallery(): GalleryItem[] {
-  return galleryItems.filter((g) => g.featured);
+export function getFeaturedGallery(locale: Locale = "zh"): GalleryItem[] {
+  return getGalleryItems(locale).filter((g) => g.featured);
 }
 
-export function getHomePreview(): GalleryItem[] {
-  return getFeaturedGallery();
+export function getHomePreview(locale: Locale = "zh"): GalleryItem[] {
+  return getFeaturedGallery(locale);
 }
+
+/** @deprecated Use getGalleryItems(locale) */
+export const galleryItems = getGalleryItems("zh");
+
+/** @deprecated Use getFeaturedProjects(locale) */
+export const featuredProjects = getFeaturedProjects("zh");

@@ -1,23 +1,25 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "@/context/LocaleContext";
 
 const AUDIO_VOLUME = 0.25;
 
 const PLAYLIST = [
   {
     title: "1940s Autumn Vintage Jazz",
-    artist: "🍒 适合沉思与放松",
+    artist: "For contemplation & calm",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
   },
   {
     title: "Midnight Contemplation & Relax",
-    artist: "🍒 适合沉思与放松",
+    artist: "For contemplation & calm",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
   },
 ] as const;
 
 export function TopBarMusicBox() {
+  const { t } = useLocale();
   const [trackIndex, setTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -108,7 +110,7 @@ export function TopBarMusicBox() {
         <div
           id="topMusicBox"
           role="group"
-          aria-label="氛围音乐播放器"
+          aria-label={t.ui.musicPlayer}
           className={`top-bar-music-box box-border flex h-9 cursor-default items-center gap-3 rounded-[30px] border border-white/10 bg-white/[0.05] px-4 py-1.5 transition-all hover:border-[rgba(224,169,109,0.4)] hover:bg-white/[0.08] ${
             isPlaying ? "playing" : ""
           }`}
@@ -127,7 +129,7 @@ export function TopBarMusicBox() {
               {currentTrack.title}
             </p>
             <p className="nav-song-artist m-0 text-[8px] font-medium tracking-wide text-[rgba(224,169,109,0.7)]">
-              {currentTrack.artist}
+              {t.ui.musicMood}
             </p>
           </div>
           <div className="nav-audio-controls flex items-center gap-2 border-l border-white/15 pl-2.5">
@@ -135,8 +137,8 @@ export function TopBarMusicBox() {
               type="button"
               className="nav-ctrl-btn flex cursor-pointer items-center justify-center border-none bg-transparent p-0 text-sm text-white/50 outline-none transition-all hover:scale-[1.15] hover:text-white"
               onClick={(e) => changeTrack(-1, e)}
-              title="上一首"
-              aria-label="上一首"
+              title={t.ui.prevTrack}
+              aria-label={t.ui.prevTrack}
             >
               <i className="ri-skip-back-mini-line" aria-hidden />
             </button>
@@ -144,8 +146,8 @@ export function TopBarMusicBox() {
               type="button"
               className="nav-ctrl-btn nav-main-play flex cursor-pointer items-center justify-center border-none bg-transparent p-0 text-base text-[#e0a96d] outline-none transition-all hover:scale-[1.15]"
               onClick={togglePlayPause}
-              title={isPlaying ? "暂停" : "播放"}
-              aria-label={isPlaying ? "暂停" : "播放"}
+              title={isPlaying ? t.music.pause : t.music.play}
+              aria-label={isPlaying ? t.music.pause : t.music.play}
             >
               <i
                 id="navPlayIcon"
@@ -157,8 +159,8 @@ export function TopBarMusicBox() {
               type="button"
               className="nav-ctrl-btn flex cursor-pointer items-center justify-center border-none bg-transparent p-0 text-sm text-white/50 outline-none transition-all hover:scale-[1.15] hover:text-white"
               onClick={(e) => changeTrack(1, e)}
-              title="下一首"
-              aria-label="下一首"
+              title={t.ui.nextTrack}
+              aria-label={t.ui.nextTrack}
             >
               <i className="ri-skip-forward-mini-line" aria-hidden />
             </button>

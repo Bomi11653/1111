@@ -1,7 +1,15 @@
 import type { MediaBlock, ProjectSection } from "@/data/projects";
 import { WorkImage } from "./WorkImage";
 
-function MediaRenderer({ block }: { block: MediaBlock }) {
+function MediaRenderer({
+  block,
+  fallbackExternal,
+  videoUnsupported,
+}: {
+  block: MediaBlock;
+  fallbackExternal: string;
+  videoUnsupported: string;
+}) {
   if (block.type === "image") {
     return (
       <figure className="rounded-xl overflow-hidden border border-border">
@@ -28,7 +36,7 @@ function MediaRenderer({ block }: { block: MediaBlock }) {
           preload="metadata"
         >
           <source src={block.src} />
-          您的浏览器不支持视频播放
+          {videoUnsupported}
         </video>
         {block.caption && (
           <figcaption className="text-xs text-muted px-4 py-3 border-t border-border">
@@ -47,14 +55,22 @@ function MediaRenderer({ block }: { block: MediaBlock }) {
       className="flex items-center justify-between rounded-xl border border-border bg-surface-elevated px-6 py-5 hover:border-accent/50 transition-colors group"
     >
       <span className="text-foreground group-hover:text-accent transition-colors">
-        {block.caption ?? "打开外部链接"}
+        {block.caption ?? fallbackExternal}
       </span>
       <span className="text-accent">↗</span>
     </a>
   );
 }
 
-export function ProjectSections({ sections }: { sections: ProjectSection[] }) {
+export function ProjectSections({
+  sections,
+  fallbackExternal = "Open external link",
+  videoUnsupported = "Your browser does not support video playback",
+}: {
+  sections: ProjectSection[];
+  fallbackExternal?: string;
+  videoUnsupported?: string;
+}) {
   return (
     <div className="space-y-24 md:space-y-32">
       {sections.map((section, index) => (
@@ -76,7 +92,12 @@ export function ProjectSections({ sections }: { sections: ProjectSection[] }) {
             <div className="md:col-span-8 space-y-8">
               <p className="text-muted text-lg leading-relaxed">{section.body}</p>
               {section.media?.map((m, i) => (
-                <MediaRenderer key={`${section.id}-media-${i}`} block={m} />
+                <MediaRenderer
+                  key={`${section.id}-media-${i}`}
+                  block={m}
+                  fallbackExternal={fallbackExternal}
+                  videoUnsupported={videoUnsupported}
+                />
               ))}
             </div>
           </div>

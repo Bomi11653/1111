@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, startTransition } from "react";
 import { site } from "@/data/site";
+import { siteLocales, type SiteLocaleContent } from "@/data/siteLocales";
 import { translations, type Locale, type TranslationKey } from "@/data/i18n";
 
 type LocaleContextValue = {
@@ -9,47 +10,33 @@ type LocaleContextValue = {
   t: TranslationKey;
   toggleLocale: () => void;
   setLocale: (locale: Locale) => void;
-  siteText: {
-    name: string;
-    title: string;
-    tagline: string;
-    headline: string;
-  };
+  siteText: SiteLocaleContent;
+  site: typeof site;
 };
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
-const siteI18n = {
-  zh: {
-    name: site.name,
-    title: site.title,
-    tagline: site.tagline,
-    headline: site.headline,
-  },
-  en: {
-    name: site.nameEn,
-    title: "Game Environment Artist",
-    tagline: "3D Environment Art",
-    headline: "Crafting immersive game worlds through light, shadow, and detail.",
-  },
-};
+function persistLocale(next: Locale) {
+  localStorage.setItem("locale", next);
+  document.documentElement.lang = next === "zh" ? "zh-CN" : "en";
+  document.cookie = `locale=${next};path=/;max-age=31536000;sameSite=lax`;
+}
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("zh");
 
   useEffect(() => {
     const saved = localStorage.getItem("locale") as Locale | null;
-    if (saved === "zh" || saved === "en") {
-      startTransition(() => {
-        setLocaleState(saved);
-      });
-    }
+    const next = saved === "en" ? "en" : "zh";
+    startTransition(() => {
+      setLocaleState(next);
+    });
+    persistLocale(next);
   }, []);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
-    localStorage.setItem("locale", next);
-    document.documentElement.lang = next === "zh" ? "zh-CN" : "en";
+    persistLocale(next);
   }, []);
 
   const toggleLocale = useCallback(() => {
@@ -63,7 +50,8 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
         t: translations[locale],
         toggleLocale,
         setLocale,
-        siteText: siteI18n[locale],
+        siteText: siteLocales[locale],
+        site,
       }}
     >
       {children}

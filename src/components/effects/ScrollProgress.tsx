@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useLocale } from "@/context/LocaleContext";
 import { scrollToElement } from "@/lib/smoothScroll";
 
 const sections = [
@@ -12,6 +13,7 @@ const sections = [
 ];
 
 export function ScrollProgress() {
+  const { t } = useLocale();
   const { scrollYProgress } = useScroll();
   const scaleY = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
   const [active, setActive] = useState(0);
@@ -44,7 +46,7 @@ export function ScrollProgress() {
   return (
     <aside
       className="fixed left-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center gap-4"
-      aria-label="页面进度"
+      aria-label={t.ui.pageProgress}
     >
       <div className="relative h-32 w-px bg-border/60">
         <motion.div
@@ -60,7 +62,7 @@ export function ScrollProgress() {
           className={`text-[10px] tracking-widest transition-colors duration-300 ${
             active === i ? "text-accent" : "text-muted hover:text-foreground"
           }`}
-          aria-label={`跳转到第 ${s.label} 节`}
+          aria-label={t.ui.jumpToSection.replace("{label}", s.label)}
           data-cursor="hover"
         >
           {s.label}
@@ -71,6 +73,7 @@ export function ScrollProgress() {
 }
 
 export function VerticalSocial() {
+  const { t } = useLocale();
   const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.15], [1, 0.4]);
 
@@ -78,7 +81,7 @@ export function VerticalSocial() {
     <motion.aside
       style={{ opacity }}
       className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center gap-6"
-      aria-label="社交链接"
+      aria-label={t.ui.socialLinks}
     >
       <span
         className="text-[10px] tracking-[0.35em] text-muted uppercase"

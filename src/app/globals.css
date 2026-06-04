@@ -319,6 +319,10 @@ body::after {
   height: 100%;
 }
 
+.home-ambient {
+  background: #010101;
+}
+
 .glass-panel {
   background: color-mix(in srgb, var(--surface) 55%, transparent);
   backdrop-filter: blur(24px);
@@ -445,7 +449,10 @@ body::after {
   position: relative;
   overflow: hidden;
   height: clamp(56px, 10vw, 96px);
-  transition: opacity 0.45s ease, filter 0.45s ease;
+  transition:
+    opacity 0.45s ease,
+    filter 0.45s ease,
+    transform 0.4s ease;
 }
 
 .menu-art__item--static {
@@ -484,6 +491,7 @@ body::after {
 .menu-art__trigger:hover .menu-art__item,
 .menu-art__item--interactive:focus-within {
   text-shadow: 0 0 30px var(--menu-glow);
+  transform: translateX(10px);
 }
 
 .menu-art__item--interactive:hover .menu-art__cn,
@@ -500,6 +508,30 @@ body::after {
 .menu-art__item--active {
   opacity: 1 !important;
   filter: none !important;
+}
+
+@media (max-width: 768px) {
+  .menu-art {
+    gap: 18px;
+    max-width: 100%;
+  }
+
+  .menu-art__item {
+    height: clamp(48px, 12vw, 72px);
+  }
+
+  .menu-art__cn {
+    font-size: clamp(28px, 9vw, 52px);
+  }
+
+  .menu-art__en {
+    font-size: clamp(22px, 7vw, 40px);
+  }
+
+  .menu-art__item--interactive:hover,
+  .menu-art__trigger:hover .menu-art__item {
+    transform: translateX(6px);
+  }
 }
 
 .nav-shutter-panel {

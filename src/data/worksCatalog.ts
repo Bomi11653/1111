@@ -1,4 +1,6 @@
+import type { Locale } from "@/data/i18n";
 import type { GalleryItem, Project, ProjectSection } from "@/data/projects";
+import { worksCatalogEn } from "@/data/worksCatalog.en";
 
 /** 作品页右侧轮播海报 + 三页同步文案/图片路径 */
 export type WorkCatalogEntry = {
@@ -36,7 +38,7 @@ export type WorkCatalogEntry = {
 const ARK_BASE = "/works/blender-ark";
 const ICE_BASE = "/works/bing-suo-han-chuan";
 
-export const worksCatalog: WorkCatalogEntry[] = [
+export const worksCatalogZh: WorkCatalogEntry[] = [
   {
     slug: "blender-ark",
     title: "方舟",
@@ -194,12 +196,16 @@ export const worksCatalog: WorkCatalogEntry[] = [
   },
 ];
 
-export function getWorkBySlug(slug: string): WorkCatalogEntry | undefined {
-  return worksCatalog.find((w) => w.slug === slug);
+function catalogFor(locale: Locale): WorkCatalogEntry[] {
+  return locale === "en" ? worksCatalogEn : worksCatalogZh;
 }
 
-export function getFeaturedWorks(): WorkCatalogEntry[] {
-  return worksCatalog.filter((w) => w.featured);
+export function getWorkBySlug(slug: string, locale: Locale = "zh"): WorkCatalogEntry | undefined {
+  return catalogFor(locale).find((w) => w.slug === slug);
+}
+
+export function getFeaturedWorks(locale: Locale = "zh"): WorkCatalogEntry[] {
+  return catalogFor(locale).filter((w) => w.featured);
 }
 
 export function toGalleryItem(entry: WorkCatalogEntry): GalleryItem {

@@ -4,19 +4,22 @@ import { ProjectSections } from "@/components/ProjectSections";
 import { ProjectDetailEntrance } from "@/components/transitions/ProjectDetailEntrance";
 import { Button } from "@/components/ui/Button";
 import { WorkImage } from "@/components/WorkImage";
-import { featuredProjects, getProjectBySlug } from "@/data/projects";
+import { getFeaturedProjects, getProjectBySlug } from "@/data/projects";
+import { translations } from "@/data/i18n";
 import { getImmersiveVisual } from "@/data/immersiveProjects";
+import { getServerLocale } from "@/lib/serverLocale";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return featuredProjects.map((p) => ({ slug: p.slug }));
+  return getFeaturedProjects("zh").map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
-  if (!project) return { title: "未找到项目" };
+  const locale = await getServerLocale();
+  const project = getProjectBySlug(slug, locale);
+  if (!project) return { title: translations[locale].ui.projectNotFound };
   return {
     title: project.title,
     description: project.summary,
@@ -25,10 +28,13 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const locale = await getServerLocale();
+  const project = getProjectBySlug(slug, locale);
+  const t = translations[locale];
+
   if (!project) notFound();
 
-  const visual = getImmersiveVisual(slug);
+  const visual = getImmersiveVisual(slug, locale);
 
   return (
     <ProjectDetailEntrance>
@@ -46,7 +52,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               href="/works"
               className="text-sm text-white/50 hover:text-accent mb-8 inline-block"
             >
-              ← 返回作品
+              {t.ui.backToWorks}
             </Link>
             <p className="text-accent text-xs tracking-[0.2em] uppercase">
               {project.year} · {project.role}
@@ -57,23 +63,23 @@ export default async function ProjectDetailPage({ params }: Props) {
             <p className="text-white/55 text-lg mt-4 max-w-2xl leading-relaxed">{project.summary}</p>
             <div className="flex flex-wrap gap-4 mt-6 text-sm text-white/45">
               <span>
-                <span className="text-white/80">类型</span> · {project.meta.category}
+                <span className="text-white/80">{t.ui.category}</span> · {project.meta.category}
               </span>
               <span>
-                <span className="text-white/80">周期</span> · {project.meta.durationWeeks} 周
+                <span className="text-white/80">{t.ui.duration}</span> · {project.meta.durationWeeks} {t.ui.weeks}
               </span>
               <span>
-                <span className="text-white/80">制作</span> ·{" "}
-                {project.meta.solo ? "独立完成" : "团队协作"}
+                <span className="text-white/80">{t.ui.production}</span> ·{" "}
+                {project.meta.solo ? t.ui.solo : t.ui.team}
               </span>
             </div>
             <div className="flex flex-wrap gap-2 mt-4">
-              {project.tools.map((t) => (
+              {project.tools.map((tool) => (
                 <span
-                  key={t}
+                  key={tool}
                   className="text-xs px-3 py-1 rounded-full border border-white/10 text-white/50"
                 >
-                  {t}
+                  {tool}
                 </span>
               ))}
             </div>
@@ -83,23 +89,23 @@ export default async function ProjectDetailPage({ params }: Props) {
               rel="noopener noreferrer"
               className="inline-block mt-6 text-sm text-accent hover:underline"
             >
-              在 GGAC 查看完整作品 ↗
+              {t.ui.viewOnGgac}
             </a>
           </div>
         </header>
 
         <div className="mx-auto max-w-6xl px-6 py-20 md:py-28">
-          <ProjectSections sections={project.sections} />
+          <ProjectSections sections={project.sections} fallbackExternal={t.ui.openExternal} videoUnsupported={t.ui.videoUnsupported} />
         </div>
 
         <footer className="border-t border-white/5 mx-auto max-w-6xl px-6 py-16 flex flex-wrap gap-4 justify-between items-center">
-          <p className="text-white/40 text-sm">下一个项目</p>
+          <p className="text-white/40 text-sm">{t.ui.nextProject}</p>
           <div className="flex gap-3">
             <Button href="/works" variant="secondary">
-              全部作品
+              {t.ui.allWorks}
             </Button>
             <Button href="/contact" variant="primary">
-              讨论合作
+              {t.ui.discuss}
             </Button>
           </div>
         </footer>

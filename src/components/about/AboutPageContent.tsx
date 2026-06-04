@@ -126,9 +126,6 @@ export function AboutPageContent() {
         <Button href="/contact" variant="primary">
           {a.ctaButton}
         </Button>
-        <Button href={site.resumePath} variant="secondary">
-          {t.contact.downloadResume}
-        </Button>
       </motion.div>
 
       <div className="fixed bottom-8 right-6 md:bottom-12 md:right-12 z-30">

@@ -2,20 +2,22 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Providers } from "@/components/effects/Providers";
-import { site } from "@/data/site";
+import { siteLocales } from "@/data/siteLocales";
 import "./globals.css";
+
+const metaSite = siteLocales.en;
 
 export const metadata: Metadata = {
   title: {
-    default: `${site.name} · ${site.title}`,
-    template: `%s · ${site.name}`,
+    default: `${metaSite.name} · ${metaSite.title}`,
+    template: `%s · ${metaSite.name}`,
   },
-  description: `${site.headline} — ${site.tagline}`,
+  description: `${metaSite.headline} — ${metaSite.tagline}`,
   openGraph: {
-    title: `${site.name} · ${site.title}`,
-    description: site.headline,
+    title: `${metaSite.name} · ${metaSite.title}`,
+    description: metaSite.headline,
     type: "website",
-    locale: "zh_CN",
+    locale: "en_US",
   },
 };
 
@@ -25,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="h-full">
+    <html lang="zh-CN" suppressHydrationWarning className="h-full">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { Button } from "./ui/Button";
+import { useLocale } from "@/context/LocaleContext";
+import { site } from "@/data/site";
 
 export function ContactForm() {
+  const { t } = useLocale();
   const [status, setStatus] = useState<"idle" | "sent">("idle");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -13,11 +16,11 @@ export function ContactForm() {
     const name = data.get("name") as string;
     const message = data.get("message") as string;
     const email = data.get("email") as string;
-    const subject = encodeURIComponent(`作品集联系 - ${name}`);
+    const subject = encodeURIComponent(t.ui.contactSubject.replace("{name}", name));
     const body = encodeURIComponent(
-      `姓名：${name}\n邮箱：${email}\n\n${message}`,
+      `${t.ui.contactBodyName}: ${name}\n${t.ui.contactBodyEmail}: ${email}\n\n${message}`,
     );
-    window.location.href = `mailto:3311078363@qq.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`;
     setStatus("sent");
   }
 
@@ -25,41 +28,39 @@ export function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="grid sm:grid-cols-2 gap-5">
         <label className="block">
-          <span className="text-xs text-muted uppercase tracking-wider">姓名</span>
+          <span className="text-xs text-muted uppercase tracking-wider">{t.ui.name}</span>
           <input
             name="name"
             required
             className="mt-2 w-full rounded-lg border border-border bg-surface px-4 py-3 text-foreground focus:border-accent outline-none transition-colors"
-            placeholder="您的称呼"
+            placeholder={t.ui.namePlaceholder}
           />
         </label>
         <label className="block">
-          <span className="text-xs text-muted uppercase tracking-wider">邮箱</span>
+          <span className="text-xs text-muted uppercase tracking-wider">{t.ui.email}</span>
           <input
             name="email"
             type="email"
             required
             className="mt-2 w-full rounded-lg border border-border bg-surface px-4 py-3 text-foreground focus:border-accent outline-none transition-colors"
-            placeholder="用于回复您"
+            placeholder={t.ui.emailPlaceholder}
           />
         </label>
       </div>
       <label className="block">
-        <span className="text-xs text-muted uppercase tracking-wider">留言</span>
+        <span className="text-xs text-muted uppercase tracking-wider">{t.ui.message}</span>
         <textarea
           name="message"
           required
           rows={5}
           className="mt-2 w-full rounded-lg border border-border bg-surface px-4 py-3 text-foreground focus:border-accent outline-none transition-colors resize-y"
-          placeholder="合作意向、项目类型或时间安排…"
+          placeholder={t.ui.messagePlaceholder}
         />
       </label>
       <Button type="submit" variant="primary">
-        {status === "sent" ? "已打开邮件客户端" : "发送留言"}
+        {status === "sent" ? t.ui.mailClientOpened : t.ui.sendMessage}
       </Button>
-      <p className="text-xs text-muted">
-        提交后将打开本地邮件应用；也可直接发送至 3311078363@qq.com
-      </p>
+      <p className="text-xs text-muted">{t.ui.mailClientHint.replace("{email}", site.email)}</p>
     </form>
   );
 }

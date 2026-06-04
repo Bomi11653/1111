@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { GalleryItem } from "@/data/projects";
+import { useLocale } from "@/context/LocaleContext";
 import { WorkImage } from "./WorkImage";
 
 type Props = {
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function StackGallery({ items, linkFeatured = true }: Props) {
+  const { t } = useLocale();
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
@@ -45,7 +47,7 @@ export function StackGallery({ items, linkFeatured = true }: Props) {
               }}
               role="button"
               tabIndex={0}
-              aria-label={`${item.title}，${isActive ? "当前选中" : "点击选中"}`}
+              aria-label={`${item.title}, ${isActive ? t.ui.galleryActive : t.ui.gallerySelect}`}
             >
               <div className="relative h-[55%] w-full">
                 <WorkImage src={item.cover} alt={item.title} fill className="opacity-90" />
@@ -73,7 +75,7 @@ export function StackGallery({ items, linkFeatured = true }: Props) {
                         className="text-sm text-accent hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        查看项目详情 →
+                        {t.ui.viewProject}
                       </Link>
                     )}
                     {item.externalUrl && (
@@ -84,7 +86,7 @@ export function StackGallery({ items, linkFeatured = true }: Props) {
                         className="text-sm text-muted hover:text-accent"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        外部链接 ↗
+                        {t.ui.externalLink}
                       </a>
                     )}
                   </div>
@@ -102,7 +104,7 @@ export function StackGallery({ items, linkFeatured = true }: Props) {
           <button
             key={i}
             type="button"
-            aria-label={`切换到第 ${i + 1} 张`}
+            aria-label={t.ui.switchSlide.replace("{n}", String(i + 1))}
             className={`h-1.5 rounded-full transition-all ${
               i === activeIndex ? "w-8 bg-accent" : "w-2 bg-border hover:bg-muted"
             }`}

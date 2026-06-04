@@ -1,7 +1,7 @@
 import { AboutPageContent } from "@/components/about/AboutPageContent";
 
 export const metadata = {
-  title: "关于",
+  title: "About",
 };
 
 export default function AboutPage() {

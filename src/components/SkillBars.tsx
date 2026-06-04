@@ -1,4 +1,6 @@
-import { site } from "@/data/site";
+"use client";
+
+import { useLocale } from "@/context/LocaleContext";
 
 const iconMap: Record<string, string> = {
   Blender: "B",
@@ -8,9 +10,11 @@ const iconMap: Record<string, string> = {
 };
 
 export function SkillBars() {
+  const { t, siteText } = useLocale();
+
   return (
     <ul className="space-y-6">
-      {site.skills.map((skill) => (
+      {siteText.skills.map((skill) => (
         <li key={skill.name}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
@@ -35,7 +39,7 @@ export function SkillBars() {
               aria-valuenow={skill.level}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-label={`${skill.name} 熟练度`}
+              aria-label={t.ui.skillLevel.replace("{name}", skill.name)}
             />
           </div>
         </li>

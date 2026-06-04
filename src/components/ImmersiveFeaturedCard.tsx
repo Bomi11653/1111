@@ -142,7 +142,7 @@ export function ImmersiveFeaturedCard({ items, onHoverChange }: Props) {
               type="button"
               onClick={goPrev}
               className="ds-icon-btn absolute left-4 top-1/2 -translate-y-1/2 z-10"
-              aria-label="上一个作品"
+              aria-label={t.ui.prevWork}
               data-cursor="hover"
             >
               ‹
@@ -151,7 +151,7 @@ export function ImmersiveFeaturedCard({ items, onHoverChange }: Props) {
               type="button"
               onClick={goNext}
               className="ds-icon-btn absolute right-4 top-1/2 -translate-y-1/2 z-10"
-              aria-label="下一个作品"
+              aria-label={t.ui.nextWork}
               data-cursor="hover"
             >
               ›
@@ -167,7 +167,7 @@ export function ImmersiveFeaturedCard({ items, onHoverChange }: Props) {
               <button
                 key={work.id}
                 type="button"
-                aria-label={`切换到 ${work.title}`}
+                aria-label={t.ui.switchToWork.replace("{title}", work.title)}
                 aria-current={i === active ? "true" : undefined}
                 onClick={() => goTo(i)}
                 className="group relative flex flex-col items-center gap-2 px-3 py-2 cursor-pointer"

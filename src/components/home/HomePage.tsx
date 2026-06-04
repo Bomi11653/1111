@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { ArtisticHero } from "@/components/home/ArtisticHero";
 import { HomeAmbientLayer } from "@/components/home/HomeAmbientLayer";
 import { ScrollProgress, VerticalSocial } from "@/components/effects/ScrollProgress";
@@ -16,18 +16,7 @@ import { site } from "@/data/site";
 import { useHomeNarrative } from "@/hooks/useHomeNarrative";
 import { DURATION, EASE_OUT } from "@/lib/motion";
 
-const timeline = [
-  {
-    year: "2025",
-    zh: "方舟 · 播种计划 · 方舟-7 · 4 周独立制作",
-    en: "Ark-7 · Seeding Initiative · 4 weeks solo",
-  },
-  {
-    year: "2025",
-    zh: "冰锁寒川 · 科幻寒域环境 · 3 周独立制作",
-    en: "Ice Lock River · sci-fi cold environment · 3 weeks solo",
-  },
-];
+const timelineYears = ["2025", "2025"] as const;
 
 function RevealBlock({
   children,
@@ -55,12 +44,16 @@ function RevealBlock({
 }
 
 export function HomePage() {
-  const previews = getHomePreview();
   const { t, locale } = useLocale();
+  const previews = useMemo(() => getHomePreview(locale), [locale]);
+  const timeline = useMemo(
+    () => [t.ui.timelineArk, t.ui.timelineIce],
+    [t.ui.timelineArk, t.ui.timelineIce],
+  );
   const pageRef = useRef<HTMLDivElement>(null);
   const sceneStateRef = useRef<SceneState>({
     scroll: 0,
-    intensity: 0.36,
+    intensity: 1,
     cameraZ: 2.65,
     hoverBoost: 0,
     mouseUV: { x: 0.5, y: 0.5 },
@@ -104,15 +97,15 @@ export function HomePage() {
             <RevealBlock delay={0.14} className="mt-16 space-y-0">
               {timeline.map((entry, i) => (
                 <div
-                  key={`${entry.year}-${i}`}
+                  key={`${timelineYears[i]}-${i}`}
                   className={`flex gap-8 md:gap-12 py-9 ${
                     i < timeline.length - 1 ? "border-b border-border/40" : ""
                   }`}
                 >
                   <span className="font-serif text-2xl md:text-3xl text-primary/75 tabular-nums shrink-0 w-16">
-                    {entry.year}
+                    {timelineYears[i]}
                   </span>
-                  <p className="body-text !text-base md:!text-lg pt-1">{locale === "zh" ? entry.zh : entry.en}</p>
+                  <p className="body-text !text-base md:!text-lg pt-1">{entry}</p>
                 </div>
               ))}
             </RevealBlock>
@@ -148,9 +141,6 @@ export function HomePage() {
             <div className="mt-10 flex flex-wrap gap-4 justify-center">
               <Button href="/contact" variant="primary">
                 {t.contact.goContact}
-              </Button>
-              <Button href={site.resumePath} variant="secondary">
-                {t.contact.downloadResume}
               </Button>
             </div>
           </RevealBlock>

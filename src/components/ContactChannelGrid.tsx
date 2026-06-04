@@ -33,12 +33,12 @@ export function ContactGreeting() {
 }
 
 export function ContactChannelGrid() {
-  const { locale } = useLocale();
+  const { t, siteText } = useLocale();
 
   const channels: Channel[] = [
     {
       id: "email",
-      label: locale === "zh" ? "邮箱" : "Email",
+      label: t.ui.emailLabel,
       subtitle: site.email,
       href: `mailto:${site.email}`,
       icon: <MailIcon />,
@@ -46,7 +46,7 @@ export function ContactChannelGrid() {
     {
       id: "bilibili",
       label: "Bilibili",
-      subtitle: site.nameEn,
+      subtitle: siteText.name,
       href: site.social.bilibili.url,
       external: true,
       icon: <PlayIcon />,
@@ -54,7 +54,7 @@ export function ContactChannelGrid() {
     {
       id: "ggac",
       label: "GGAC",
-      subtitle: site.name,
+      subtitle: siteText.name,
       href: site.social.ggac.url,
       external: true,
       icon: <GlobeIcon />,

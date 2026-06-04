@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { TopBarMusicBox } from "@/components/TopBarMusicBox";
 import { useLocale } from "@/context/LocaleContext";
-import { site } from "@/data/site";
 
 const navHrefs = ["/", "/works", "/about", "/contact"] as const;
 
@@ -14,7 +13,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { t } = useLocale();
+  const { t, siteText } = useLocale();
   const isHome = pathname === "/";
 
   const labels = [t.nav.home, t.nav.works, t.nav.about, t.nav.contact];
@@ -60,11 +59,11 @@ export function SiteHeader() {
             ZRC
           </span>
           <span className="hidden sm:block text-sm text-muted tracking-wide">
-            {site.name}
+            {siteText.name}
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-10" aria-label="主导航">
+        <nav className="hidden md:flex items-center gap-10" aria-label={t.ui.mainNav}>
           {navHrefs.map((href, i) => {
             const active =
               href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -79,7 +78,7 @@ export function SiteHeader() {
             type="button"
             className="md:hidden flex flex-col gap-1.5 p-2"
             aria-expanded={open}
-            aria-label="打开菜单"
+            aria-label={t.ui.openMenu}
             onClick={() => setOpen(!open)}
           >
             <span className="block w-6 h-px bg-foreground" />
@@ -91,7 +90,7 @@ export function SiteHeader() {
       {open && (
         <nav
           className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl px-6 py-6 flex flex-col gap-5"
-          aria-label="移动端导航"
+          aria-label={t.ui.mobileNav}
         >
           <LanguageToggle />
           {navHrefs.map((href, i) => {

@@ -1,7 +1,7 @@
 import { ContactChannelGrid, ContactGreeting } from "@/components/ContactChannelGrid";
 
 export const metadata = {
-  title: "联系",
+  title: "Contact",
 };
 
 export default function ContactPage() {

@@ -1,21 +1,29 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocale } from "@/context/LocaleContext";
 import { usePageTransition } from "@/context/PageTransitionContext";
-import { immersiveVisuals, type ImmersiveVisual } from "@/data/immersiveProjects";
+import { getImmersiveVisuals, type ImmersiveVisual } from "@/data/immersiveProjects";
 import { getProjectColorsFromThemeHue } from "@/lib/color/projectColors";
 import { useTheme } from "@/lib/color/ThemeProvider";
 import { WorksPosterStage } from "./WorksPosterStage";
 
 export function ImmersiveWorksSection() {
+  const { locale, t } = useLocale();
   const { startNavReveal, isTransitioning } = usePageTransition();
   const theme = useTheme();
-  const [active, setActive] = useState<ImmersiveVisual>(immersiveVisuals[0]);
+  const visuals = useMemo(() => getImmersiveVisuals(locale), [locale]);
+  const [active, setActive] = useState<ImmersiveVisual>(visuals[0]);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
 
+  useEffect(() => {
+    setActive(visuals[0]);
+    setHoveredSlug(null);
+  }, [visuals]);
+
   const displaySlug = hoveredSlug ?? active.slug;
-  const displayProject = immersiveVisuals.find((p) => p.slug === displaySlug) ?? active;
+  const displayProject = visuals.find((p) => p.slug === displaySlug) ?? active;
   const isEngaged = hoveredSlug !== null || active.slug === displayProject.slug;
 
   const handleEnter = (project: ImmersiveVisual) => {
@@ -38,10 +46,10 @@ export function ImmersiveWorksSection() {
       </div>
 
       <div className="relative z-10 w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-20 py-16 lg:py-24">
-        <p className="text-[10px] tracking-[0.4em] text-white/35 uppercase mb-10">Works</p>
+        <p className="text-[10px] tracking-[0.4em] text-white/35 uppercase mb-10">{t.nav.works}</p>
 
         <ul className="space-y-2 md:space-y-4">
-          {immersiveVisuals.map((project) => {
+          {visuals.map((project) => {
             const isActive = active.slug === project.slug;
             const isHovered = hoveredSlug === project.slug;
             const accent = getProjectColorsFromThemeHue(theme.hue, project.hueOffset).color;
@@ -96,7 +104,7 @@ export function ImmersiveWorksSection() {
                       transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
                     }}
                   >
-                    {project.subtitle} · 点击进入 →
+                    {project.subtitle} · {t.ui.clickToEnter}
                   </p>
                 </button>
               </li>

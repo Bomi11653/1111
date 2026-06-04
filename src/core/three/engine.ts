@@ -154,7 +154,8 @@ export class ThreeEngine {
     const height = Math.max(this.container.clientHeight, 1);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    const dprCap = width < 768 ? 1.5 : 1.75;
+    const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
     this.renderer.setPixelRatio(dpr);
     this.renderer.setSize(width, height, false);
     this.composer?.setSize(width, height);

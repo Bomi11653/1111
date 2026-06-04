@@ -2,10 +2,7 @@ import * as THREE from "three";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
-import {
-  getThemePrimaryRgb,
-  getThemeSecondaryRgb,
-} from "@/lib/color/themeStore";
+import { getThemePrimaryRgb } from "@/lib/color/themeStore";
 import { disposeObject3D } from "../dispose";
 import type { ThreeEngine } from "../engine";
 import {
@@ -20,9 +17,9 @@ export function createHomeSceneModule(): SceneModule {
   let composer: EffectComposer | null = null;
   const smoothPointer = { x: 0, y: 0 };
   const smoothMouse = { x: 0.5, y: 0.5 };
-  const smoothColor = new THREE.Vector3(...getThemePrimaryRgb());
-  const smoothSecondary = new THREE.Vector3(...getThemeSecondaryRgb());
-  let smoothIntensity = 0.38;
+  const smoothFlowColor = new THREE.Vector3(...getThemePrimaryRgb());
+  let smoothIntensity = 1;
+  let smoothHoverBoost = 0;
   let smoothScroll = 0;
   let smoothCameraZ = 2.65;
 
@@ -37,23 +34,22 @@ export function createHomeSceneModule(): SceneModule {
       engine.camera.position.set(0, 0, 2.65);
       engine.scene.background = null;
 
-      const primary = getThemePrimaryRgb();
-      const secondary = getThemeSecondaryRgb();
+      const flowColor = getThemePrimaryRgb();
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
       material = new THREE.ShaderMaterial({
         uniforms: {
           uTime: { value: 0 },
-          uIntensity: { value: 0.38 },
-          uPointer: { value: new THREE.Vector2(0, 0) },
+          uIntensity: { value: 1 },
+          uHoverBoost: { value: 0 },
           uMouse: { value: new THREE.Vector2(0.5, 0.5) },
           uScroll: { value: 0 },
-          uColor: { value: new THREE.Vector3(...primary) },
-          uSecondary: { value: new THREE.Vector3(...secondary) },
+          uFlowColor: { value: new THREE.Vector3(...flowColor) },
         },
         vertexShader: homeAtmosphereVertexShader,
         fragmentShader: homeAtmosphereFragmentShader,
-        transparent: true,
-        depthWrite: false,
+        transparent: false,
+        depthWrite: true,
       });
 
       const plane = new THREE.Mesh(new THREE.PlaneGeometry(14, 10, 1, 1), material);
@@ -61,11 +57,10 @@ export function createHomeSceneModule(): SceneModule {
       engine.scene.add(root);
       engine.scene.userData.shader = material;
 
-      const enableBloom = typeof window !== "undefined" && window.innerWidth >= 768;
-      if (enableBloom && engine.renderer) {
+      if (!isMobile && engine.renderer) {
         composer = new EffectComposer(engine.renderer);
         composer.addPass(new RenderPass(engine.scene, engine.camera));
-        composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.32, 0.75, 0.14));
+        composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.18, 0.65, 0.06));
         engine.setComposer(composer);
       }
     },
@@ -75,36 +70,34 @@ export function createHomeSceneModule(): SceneModule {
 
       const pointer = state.pointer ?? { x: 0, y: 0 };
       const mouseUV = state.mouseUV ?? { x: 0.5, y: 0.5 };
-      const baseIntensity = state.intensity ?? 0.38;
       const hoverBoost = state.hoverBoost ?? 0;
-      const targetIntensity = Math.min(baseIntensity + hoverBoost, 0.82);
+      const targetIntensity = Math.min(1 + hoverBoost * 0.55, 1.55);
+      const targetHoverBoost = Math.min(hoverBoost, 1);
       const targetScroll = THREE.MathUtils.clamp(state.scroll ?? 0, 0, 1);
       const targetCameraZ = state.cameraZ ?? 2.65;
 
-      const [tr, tg, tb] = getThemePrimaryRgb();
-      const [sr, sg, sb] = getThemeSecondaryRgb();
+      const [fr, fg, fb] = getThemePrimaryRgb();
 
-      smoothPointer.x = THREE.MathUtils.lerp(smoothPointer.x, pointer.x * 0.28, 0.045);
-      smoothPointer.y = THREE.MathUtils.lerp(smoothPointer.y, pointer.y * 0.2, 0.045);
-      smoothMouse.x = THREE.MathUtils.lerp(smoothMouse.x, mouseUV.x, 0.08);
-      smoothMouse.y = THREE.MathUtils.lerp(smoothMouse.y, mouseUV.y, 0.08);
-      smoothIntensity = THREE.MathUtils.lerp(smoothIntensity, targetIntensity, 0.055);
+      smoothPointer.x = THREE.MathUtils.lerp(smoothPointer.x, pointer.x * 0.18, 0.05);
+      smoothPointer.y = THREE.MathUtils.lerp(smoothPointer.y, pointer.y * 0.14, 0.05);
+      smoothMouse.x = THREE.MathUtils.lerp(smoothMouse.x, mouseUV.x, 0.14);
+      smoothMouse.y = THREE.MathUtils.lerp(smoothMouse.y, mouseUV.y, 0.14);
+      smoothIntensity = THREE.MathUtils.lerp(smoothIntensity, targetIntensity, 0.06);
+      smoothHoverBoost = THREE.MathUtils.lerp(smoothHoverBoost, targetHoverBoost, 0.07);
       smoothScroll = THREE.MathUtils.lerp(smoothScroll, targetScroll, 0.05);
       smoothCameraZ = THREE.MathUtils.lerp(smoothCameraZ, targetCameraZ, 0.045);
-      smoothColor.lerp(new THREE.Vector3(tr, tg, tb), 0.04);
-      smoothSecondary.lerp(new THREE.Vector3(sr, sg, sb), 0.04);
+      smoothFlowColor.lerp(new THREE.Vector3(fr, fg, fb), 0.04);
 
       material.uniforms.uTime.value = elapsed;
       material.uniforms.uIntensity.value = smoothIntensity;
-      material.uniforms.uPointer.value.set(smoothPointer.x, smoothPointer.y);
+      material.uniforms.uHoverBoost.value = smoothHoverBoost;
       material.uniforms.uMouse.value.set(smoothMouse.x, smoothMouse.y);
       material.uniforms.uScroll.value = smoothScroll;
-      material.uniforms.uColor.value.copy(smoothColor);
-      material.uniforms.uSecondary.value.copy(smoothSecondary);
+      material.uniforms.uFlowColor.value.copy(smoothFlowColor);
 
       _engine.camera.position.z = smoothCameraZ;
-      _engine.camera.position.x = THREE.MathUtils.lerp(_engine.camera.position.x, smoothPointer.x * 0.08, 0.04);
-      _engine.camera.position.y = THREE.MathUtils.lerp(_engine.camera.position.y, smoothPointer.y * 0.06, 0.04);
+      _engine.camera.position.x = THREE.MathUtils.lerp(_engine.camera.position.x, smoothPointer.x * 0.06, 0.04);
+      _engine.camera.position.y = THREE.MathUtils.lerp(_engine.camera.position.y, smoothPointer.y * 0.05, 0.04);
       _engine.camera.lookAt(0, 0, 0);
     },
 
