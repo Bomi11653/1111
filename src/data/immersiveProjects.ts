@@ -1,7 +1,5 @@
-import { getFeaturedWorks, getWorkBySlug } from "@/data/worksCatalog";
-
-const baseFor = (slug: string) =>
-  slug === "blender-ark" ? "/works/blender-ark" : "/works/bing-suo-han-chuan";
+import { getPublishedWorks, getWorkBySlug, getWorkBySlugForPreview } from "@/data/worksCatalog";
+import type { WorkCatalogEntry } from "@/lib/cms-types";
 
 /** 作品页列表 + 右侧海报预览 */
 export type ImmersiveVisual = {
@@ -18,9 +16,16 @@ export type ImmersiveVisual = {
   speed: number;
 };
 
-function toVisual(slug: string): ImmersiveVisual {
-  const entry = getWorkBySlug(slug)!;
-  const base = baseFor(slug);
+function workBase(slug: string): string {
+  return `/works/${slug}`;
+}
+
+function resolvePosterUrl(slug: string, file: string): string {
+  if (file.startsWith("/uploads/") || file.startsWith("http")) return file;
+  return `${workBase(slug)}/${file}`;
+}
+
+function toVisual(entry: WorkCatalogEntry): ImmersiveVisual {
   return {
     slug: entry.slug,
     title: entry.title,
@@ -29,15 +34,20 @@ function toVisual(slug: string): ImmersiveVisual {
     summary: entry.summary,
     year: entry.year,
     cover: entry.cover,
-    stagePosters: entry.stagePosters.map((p) => `${base}/${p.file}`),
+    stagePosters: entry.stagePosters.map((p) => resolvePosterUrl(entry.slug, p.file)),
     hueOffset: entry.hueOffset,
     speed: entry.speed,
   };
 }
 
-export const immersiveVisuals: ImmersiveVisual[] = getFeaturedWorks().map((w) => toVisual(w.slug));
+export function getImmersiveVisuals(): ImmersiveVisual[] {
+  return getPublishedWorks().map(toVisual);
+}
 
-export function getImmersiveVisual(slug: string): ImmersiveVisual | undefined {
-  const entry = getWorkBySlug(slug);
-  return entry ? toVisual(slug) : undefined;
+export function getImmersiveVisual(
+  slug: string,
+  options?: { preview?: boolean },
+): ImmersiveVisual | undefined {
+  const entry = options?.preview ? getWorkBySlugForPreview(slug) : getWorkBySlug(slug);
+  return entry ? toVisual(entry) : undefined;
 }

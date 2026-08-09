@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { TopBarMusicBox } from "@/components/TopBarMusicBox";
 import { useLocale } from "@/context/LocaleContext";
-import { site } from "@/data/site";
 
 const navHrefs = ["/", "/works", "/about", "/contact"] as const;
 
@@ -14,7 +13,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { t } = useLocale();
+  const { t, site } = useLocale();
   const isHome = pathname === "/";
 
   const labels = [t.nav.home, t.nav.works, t.nav.about, t.nav.contact];

@@ -54,7 +54,19 @@ function MediaRenderer({ block }: { block: MediaBlock }) {
   );
 }
 
-export function ProjectSections({ sections }: { sections: ProjectSection[] }) {
+type Props = {
+  sections: ProjectSection[];
+  showSections?: boolean;
+  showMedia?: boolean;
+};
+
+export function ProjectSections({
+  sections,
+  showSections = true,
+  showMedia = true,
+}: Props) {
+  if (!showSections && !showMedia) return null;
+
   return (
     <div className="space-y-24 md:space-y-32">
       {sections.map((section, index) => (
@@ -65,19 +77,25 @@ export function ProjectSections({ sections }: { sections: ProjectSection[] }) {
           aria-label={section.title}
         >
           <div className="grid md:grid-cols-12 gap-10 items-start">
-            <div className="md:col-span-4 md:sticky md:top-28">
-              <span className="text-accent text-xs tracking-[0.25em] uppercase">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <h2 className="font-display text-3xl md:text-4xl mt-3 text-foreground">
-                {section.title}
-              </h2>
-            </div>
-            <div className="md:col-span-8 space-y-8">
-              <p className="text-muted text-lg leading-relaxed">{section.body}</p>
-              {section.media?.map((m, i) => (
-                <MediaRenderer key={`${section.id}-media-${i}`} block={m} />
-              ))}
+            {showSections ? (
+              <div className="md:col-span-4 md:sticky md:top-28">
+                <span className="text-accent text-xs tracking-[0.25em] uppercase">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h2 className="font-display text-3xl md:text-4xl mt-3 text-foreground">
+                  {section.title}
+                </h2>
+              </div>
+            ) : null}
+            <div className={`${showSections ? "md:col-span-8" : "md:col-span-12"} space-y-8`}>
+              {showSections ? (
+                <p className="text-muted text-lg leading-relaxed">{section.body}</p>
+              ) : null}
+              {showMedia
+                ? section.media?.map((m, i) => (
+                    <MediaRenderer key={`${section.id}-media-${i}`} block={m} />
+                  ))
+                : null}
             </div>
           </div>
         </section>

@@ -64,6 +64,10 @@ body {
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.75;
+  cursor: auto;
+}
+
+body.custom-cursor-active {
   cursor: none;
 }
 

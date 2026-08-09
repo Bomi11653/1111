@@ -9,7 +9,6 @@ import { usePageThreeScene } from "@/context/ThreeEngineContext";
 import { useLocale } from "@/context/LocaleContext";
 import type { SceneState } from "@/core/three/types";
 import { getActiveZoneIndex } from "@/lib/aboutZones";
-import { site } from "@/data/site";
 
 export function AboutPageContent() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,7 +23,7 @@ export function AboutPageContent() {
   const [scroll, setScroll] = useState(0);
   const [reveal, setReveal] = useState(0);
   const [introVisible, setIntroVisible] = useState(true);
-  const { t } = useLocale();
+  const { t, site } = useLocale();
   const a = t.about;
 
   usePageThreeScene("about", canvasRef, sceneStateRef);

@@ -1,42 +1,69 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ProjectGallerySection } from "@/components/ProjectGallerySection";
 import { ProjectSections } from "@/components/ProjectSections";
 import { ProjectDetailEntrance } from "@/components/transitions/ProjectDetailEntrance";
 import { Button } from "@/components/ui/Button";
 import { WorkImage } from "@/components/WorkImage";
-import { featuredProjects, getProjectBySlug } from "@/data/projects";
+import { getFeaturedProjects, getProjectBySlug } from "@/data/projects";
+import { getProjectGalleryImages } from "@/data/projectsData";
 import { getImmersiveVisual } from "@/data/immersiveProjects";
+import { getModulesContent, getProjectBySlugFromStore, getPublishedProjectsList } from "@/lib/cms";
+import { isModuleEnabled } from "@/lib/moduleUtils";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string }>;
+};
+
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
-  return featuredProjects.map((p) => ({ slug: p.slug }));
+  const published = getPublishedProjectsList();
+  if (published.length > 0) return published.map((p) => ({ slug: p.slug }));
+  return getFeaturedProjects().map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
-  if (!project) return { title: "未找到项目" };
+  const cmsProject = getProjectBySlugFromStore(slug);
+  if (!cmsProject) return { title: "未找到项目" };
+  const seo = cmsProject.seo;
   return {
-    title: project.title,
-    description: project.summary,
+    title: seo.title || cmsProject.title,
+    description: seo.description || cmsProject.summary,
+    openGraph: seo.ogImage
+      ? { title: seo.title || cmsProject.title, images: [{ url: seo.ogImage }] }
+      : undefined,
   };
 }
 
-export default async function ProjectDetailPage({ params }: Props) {
+export default async function ProjectDetailPage({ params, searchParams }: Props) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const { preview } = await searchParams;
+  const isDraftPreview = preview === "draft";
+  const project = getProjectBySlug(slug, { preview: isDraftPreview });
   if (!project) notFound();
 
-  const visual = getImmersiveVisual(slug);
+  const visual = getImmersiveVisual(slug, { preview: isDraftPreview });
+  const galleryImages = getProjectGalleryImages(slug, isDraftPreview);
+  const modules = getModulesContent();
+  const showSections = isModuleEnabled(modules.workDetail, "work-detail-sections");
+  const showMedia = isModuleEnabled(modules.workDetail, "work-detail-media");
+  const showGallery = showMedia;
 
   return (
     <ProjectDetailEntrance>
       <article className="relative bg-[#0a0a0a]">
+        {isDraftPreview ? (
+          <div className="sticky top-16 z-40 bg-amber-500/10 border-b border-amber-500/30 px-6 py-2 text-center text-sm text-amber-200">
+            草稿预览模式 — 此页面仅管理员可见，不会出现在正式前台
+          </div>
+        ) : null}
         <header className="relative min-h-[55vh] flex items-end border-b border-white/5 overflow-hidden">
-          {visual && (
+          {visual ? (
             <div className="absolute inset-0 opacity-25 pointer-events-none project-detail-glow" aria-hidden />
-          )}
+          ) : null}
           <div className="absolute inset-0">
             <WorkImage src={project.cover} alt={project.title} fill priority />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/75 to-[#0a0a0a]/40" />
@@ -77,19 +104,26 @@ export default async function ProjectDetailPage({ params }: Props) {
                 </span>
               ))}
             </div>
-            <a
-              href={project.meta.ggacUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-6 text-sm text-accent hover:underline"
-            >
-              在 GGAC 查看完整作品 ↗
-            </a>
+            {project.meta.ggacUrl ? (
+              <a
+                href={project.meta.ggacUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-6 text-sm text-accent hover:underline"
+              >
+                在 GGAC 查看完整作品 ↗
+              </a>
+            ) : null}
           </div>
         </header>
 
         <div className="mx-auto max-w-6xl px-6 py-20 md:py-28">
-          <ProjectSections sections={project.sections} />
+          {showGallery && showMedia ? <ProjectGallerySection images={galleryImages} /> : null}
+          <ProjectSections
+            sections={project.sections}
+            showSections={showSections}
+            showMedia={showMedia}
+          />
         </div>
 
         <footer className="border-t border-white/5 mx-auto max-w-6xl px-6 py-16 flex flex-wrap gap-4 justify-between items-center">

@@ -7,14 +7,13 @@ import { PinIcon } from "@/components/icons/ContactIcons";
 import { MenuArt } from "@/components/home/MenuArt";
 import { useLocale } from "@/context/LocaleContext";
 import { DURATION, EASE_PREMIUM } from "@/lib/motion";
-import { site } from "@/data/site";
 
 type Props = {
   onMenuHoverBoost?: (boost: number) => void;
 };
 
 export function ArtisticHero({ onMenuHoverBoost }: Props) {
-  const { t } = useLocale();
+  const { t, site, home } = useLocale();
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +59,25 @@ export function ArtisticHero({ onMenuHoverBoost }: Props) {
       id="hero"
       className="art-hero relative min-h-screen w-full overflow-hidden bg-transparent text-white"
     >
+      {home.hero.backgroundVideoUrl ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover opacity-25 pointer-events-none z-0"
+          src={home.hero.backgroundVideoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-hidden
+        />
+      ) : home.hero.backgroundImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={home.hero.backgroundImage}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover opacity-20 pointer-events-none z-0"
+          aria-hidden
+        />
+      ) : null}
       <div className="art-hero__grain absolute inset-0 pointer-events-none z-[1]" aria-hidden />
       <div className="art-hero__grid absolute inset-0 pointer-events-none opacity-[0.04] z-[1]" aria-hidden />
 

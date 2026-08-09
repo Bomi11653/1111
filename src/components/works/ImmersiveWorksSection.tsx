@@ -1,22 +1,44 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { usePageTransition } from "@/context/PageTransitionContext";
-import { immersiveVisuals, type ImmersiveVisual } from "@/data/immersiveProjects";
+import { useLocale } from "@/context/LocaleContext";
+import type { ImmersiveVisual } from "@/data/immersiveProjects";
 import { getProjectColorsFromThemeHue } from "@/lib/color/projectColors";
+import { isModuleEnabled } from "@/lib/moduleUtils";
 import { useTheme } from "@/lib/color/ThemeProvider";
 import { WorksPosterStage } from "./WorksPosterStage";
 
-export function ImmersiveWorksSection() {
+export function ImmersiveWorksSection({ visuals }: { visuals: ImmersiveVisual[] }) {
+  const { modules } = useLocale();
   const { startNavReveal, isTransitioning } = usePageTransition();
   const theme = useTheme();
-  const [active, setActive] = useState<ImmersiveVisual>(immersiveVisuals[0]);
+  const showList = isModuleEnabled(modules.works, "works-list");
+  const showTagFilter = isModuleEnabled(modules.works, "tag-filter");
+
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    visuals.forEach((v) => {
+      const parts = v.subtitle.split("·").map((s) => s.trim());
+      parts.forEach((p) => tags.add(p));
+    });
+    return ["全部", ...Array.from(tags)];
+  }, [visuals]);
+
+  const [activeTag, setActiveTag] = useState("全部");
+  const filteredVisuals = useMemo(() => {
+    if (!showTagFilter || activeTag === "全部") return visuals;
+    return visuals.filter((v) => v.subtitle.includes(activeTag));
+  }, [visuals, activeTag, showTagFilter]);
+
+  const [active, setActive] = useState<ImmersiveVisual>(visuals[0]);
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
 
+  const listVisuals = filteredVisuals.length > 0 ? filteredVisuals : visuals;
   const displaySlug = hoveredSlug ?? active.slug;
-  const displayProject = immersiveVisuals.find((p) => p.slug === displaySlug) ?? active;
-  const isEngaged = hoveredSlug !== null || active.slug === displayProject.slug;
+  const displayProject = listVisuals.find((p) => p.slug === displaySlug) ?? listVisuals[0] ?? active;
+  const isEngaged = hoveredSlug !== null || active.slug === displayProject?.slug;
 
   const handleEnter = (project: ImmersiveVisual) => {
     if (isTransitioning) return;
@@ -31,17 +53,44 @@ export function ImmersiveWorksSection() {
     );
   };
 
+  if (!showList) {
+    return (
+      <section className="immersive-works relative min-h-[50vh] flex items-center justify-center bg-[#0a0a0a] text-white">
+        <p className="text-white/35 text-sm">作品列表模块已隐藏</p>
+      </section>
+    );
+  }
+
   return (
     <section className="immersive-works relative min-h-[85vh] lg:min-h-screen flex flex-col lg:flex-row bg-[#0a0a0a] text-white overflow-hidden">
       <div className="absolute inset-0 z-0 lg:left-1/2 opacity-70 lg:opacity-100">
-        <WorksPosterStage project={displayProject} engaged={isEngaged} />
+        {displayProject ? <WorksPosterStage project={displayProject} engaged={isEngaged} /> : null}
       </div>
 
       <div className="relative z-10 w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-20 py-16 lg:py-24">
         <p className="text-[10px] tracking-[0.4em] text-white/35 uppercase mb-10">Works</p>
 
+        {showTagFilter ? (
+          <div className="flex flex-wrap gap-2 mb-8">
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => setActiveTag(tag)}
+                className={`text-[10px] tracking-[0.2em] uppercase px-3 py-1.5 rounded-full border transition-colors ${
+                  activeTag === tag
+                    ? "border-accent/60 text-accent bg-accent/10"
+                    : "border-white/10 text-white/40 hover:border-white/25"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        ) : null}
+
         <ul className="space-y-2 md:space-y-4">
-          {immersiveVisuals.map((project) => {
+          {listVisuals.map((project) => {
             const isActive = active.slug === project.slug;
             const isHovered = hoveredSlug === project.slug;
             const accent = getProjectColorsFromThemeHue(theme.hue, project.hueOffset).color;

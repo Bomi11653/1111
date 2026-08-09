@@ -1,0 +1,28 @@
+{
+  "hero": {
+    "titleZh": "郑荣成",
+    "titleEn": "Zheng Rongcheng",
+    "subtitleZh": "游戏场景设计师",
+    "subtitleEn": "Game Environment Artist",
+    "headlineZh": "用光影和细节打造沉浸式游戏世界",
+    "headlineEn": "Crafting immersive game worlds through light, shadow, and detail.",
+    "taglineZh": "专注 3D 环境艺术",
+    "taglineEn": "3D Environment Art",
+    "ctaTextZh": "查看精选作品",
+    "ctaTextEn": "View Featured Works",
+    "ctaHref": "/works"
+  },
+  "timeline": [
+    {
+      "year": "2025",
+      "zh": "方舟 · 播种计划 · 方舟-7 · 4 周独立制作",
+      "en": "Ark-7 · Seeding Initiative · 4 weeks solo"
+    },
+    {
+      "year": "2025",
+      "zh": "冰锁寒川 · 科幻寒域环境 · 3 周独立制作",
+      "en": "Ice Lock River · sci-fi cold environment · 3 weeks solo"
+    }
+  ],
+  "featuredSlugs": ["blender-ark", "bing-suo-han-chuan"]
+}

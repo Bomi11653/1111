@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { GlobeIcon, MailIcon, PlayIcon } from "@/components/icons/ContactIcons";
+import { FileIcon, GlobeIcon, MailIcon, PlayIcon } from "@/components/icons/ContactIcons";
+import { ContactForm } from "@/components/ContactForm";
 import { useLocale } from "@/context/LocaleContext";
-import { site } from "@/data/site";
+import { getEnabledModules } from "@/lib/moduleUtils";
 
 type Channel = {
   id: string;
@@ -33,17 +34,18 @@ export function ContactGreeting() {
 }
 
 export function ContactChannelGrid() {
-  const { locale } = useLocale();
+  const { locale, site, modules } = useLocale();
+  const enabled = getEnabledModules(modules.contact);
 
-  const channels: Channel[] = [
-    {
+  const channelMap: Record<string, Channel> = {
+    email: {
       id: "email",
       label: locale === "zh" ? "邮箱" : "Email",
       subtitle: site.email,
       href: `mailto:${site.email}`,
       icon: <MailIcon />,
     },
-    {
+    bilibili: {
       id: "bilibili",
       label: "Bilibili",
       subtitle: site.nameEn,
@@ -51,7 +53,7 @@ export function ContactChannelGrid() {
       external: true,
       icon: <PlayIcon />,
     },
-    {
+    ggac: {
       id: "ggac",
       label: "GGAC",
       subtitle: site.name,
@@ -59,32 +61,64 @@ export function ContactChannelGrid() {
       external: true,
       icon: <GlobeIcon />,
     },
-  ];
+    "resume-download": {
+      id: "resume-download",
+      label: locale === "zh" ? "简历下载" : "Resume",
+      subtitle: site.resumeFilename,
+      href: site.resumePath,
+      icon: <FileIcon />,
+    },
+  };
+
+  const channels = enabled
+    .filter((mod) => mod.id in channelMap)
+    .map((mod) => ({
+      ...channelMap[mod.id],
+      label: mod.title || channelMap[mod.id].label,
+    }));
+
+  const showContactForm = enabled.some((mod) => mod.id === "contact-button");
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 max-w-3xl mx-auto">
-      {channels.map((ch, i) => (
-        <motion.a
-          key={ch.id}
-          href={ch.href}
-          target={ch.external ? "_blank" : undefined}
-          rel={ch.external ? "noopener noreferrer" : undefined}
-          initial={{ opacity: 0, y: 24 }}
+    <div className="space-y-12">
+      {channels.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 max-w-4xl mx-auto">
+          {channels.map((ch, i) => (
+            <motion.a
+              key={ch.id}
+              href={ch.href}
+              target={ch.external ? "_blank" : undefined}
+              rel={ch.external ? "noopener noreferrer" : undefined}
+              download={ch.id === "resume-download" ? site.resumeFilename : undefined}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 + i * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="contact-card group flex flex-col items-center justify-center text-center min-h-[160px] p-8 rounded-2xl border border-border/50 bg-surface/40 hover:border-accent/50 hover:bg-surface/70 transition-all duration-500"
+              style={{ transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)" }}
+              data-cursor="hover"
+            >
+              <span className="text-muted group-hover:text-accent transition-colors duration-500 mb-5">
+                {ch.icon}
+              </span>
+              <span className="font-serif text-lg text-foreground">{ch.label}</span>
+              <span className="text-sm text-muted mt-2 group-hover:text-foreground/80 transition-colors truncate max-w-full">
+                {ch.subtitle}
+              </span>
+            </motion.a>
+          ))}
+        </div>
+      ) : null}
+
+      {showContactForm ? (
+        <motion.div
+          className="max-w-xl mx-auto pt-4"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 + i * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="contact-card group flex flex-col items-center justify-center text-center min-h-[160px] p-8 rounded-2xl border border-border/50 bg-surface/40 hover:border-accent/50 hover:bg-surface/70 transition-all duration-500"
-          style={{ transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)" }}
-          data-cursor="hover"
+          transition={{ delay: 0.3, duration: 0.6 }}
         >
-          <span className="text-muted group-hover:text-accent transition-colors duration-500 mb-5">
-            {ch.icon}
-          </span>
-          <span className="font-serif text-lg text-foreground">{ch.label}</span>
-          <span className="text-sm text-muted mt-2 group-hover:text-foreground/80 transition-colors truncate max-w-full">
-            {ch.subtitle}
-          </span>
-        </motion.a>
-      ))}
+          <ContactForm />
+        </motion.div>
+      ) : null}
     </div>
   );
 }

@@ -1,0 +1,174 @@
+{
+  "home": [
+    {
+      "id": "hero",
+      "page": "home",
+      "key": "hero",
+      "title": "Hero 首屏",
+      "description": "首页顶部影院级首屏与菜单导航区域",
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "id": "intro",
+      "page": "home",
+      "key": "intro",
+      "title": "个人介绍",
+      "description": "首页关于章节标题与个人简介文案",
+      "enabled": true,
+      "order": 2
+    },
+    {
+      "id": "featured-works",
+      "page": "home",
+      "key": "featured-works",
+      "title": "精选作品",
+      "description": "首页精选作品卡片展示区域",
+      "enabled": true,
+      "order": 3
+    },
+    {
+      "id": "timeline",
+      "page": "home",
+      "key": "timeline",
+      "title": "时间线",
+      "description": "首页经历时间线列表",
+      "enabled": true,
+      "order": 4
+    },
+    {
+      "id": "contact-cta",
+      "page": "home",
+      "key": "contact-cta",
+      "title": "联系 CTA",
+      "description": "首页底部联系引导与简历下载按钮",
+      "enabled": true,
+      "order": 5
+    }
+  ],
+  "works": [
+    {
+      "id": "works-list",
+      "page": "works",
+      "key": "works-list",
+      "title": "作品列表",
+      "description": "作品页沉浸式列表与海报预览",
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "id": "tag-filter",
+      "page": "works",
+      "key": "tag-filter",
+      "title": "标签筛选",
+      "description": "按标签筛选作品列表",
+      "enabled": true,
+      "order": 2
+    }
+  ],
+  "workDetail": [
+    {
+      "id": "work-detail-sections",
+      "page": "workDetail",
+      "key": "work-detail-sections",
+      "title": "作品详情章节",
+      "description": "项目详情页分屏叙事章节标题与正文",
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "id": "work-detail-media",
+      "page": "workDetail",
+      "key": "work-detail-media",
+      "title": "图片/视频媒体区",
+      "description": "项目详情页章节内图片、视频与外链媒体",
+      "enabled": true,
+      "order": 2
+    }
+  ],
+  "about": [
+    {
+      "id": "bio",
+      "page": "about",
+      "key": "bio",
+      "title": "个人简介",
+      "description": "关于页个人介绍与身份说明",
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "id": "photo",
+      "page": "about",
+      "key": "photo",
+      "title": "个人照片",
+      "description": "关于页个人肖像展示",
+      "enabled": true,
+      "order": 2
+    },
+    {
+      "id": "skills",
+      "page": "about",
+      "key": "skills",
+      "title": "技能模块",
+      "description": "关于页能力/skills 卡片区域",
+      "enabled": true,
+      "order": 3
+    },
+    {
+      "id": "experience",
+      "page": "about",
+      "key": "experience",
+      "title": "经历模块",
+      "description": "关于页设计理念与经历叙事",
+      "enabled": true,
+      "order": 4
+    }
+  ],
+  "contact": [
+    {
+      "id": "email",
+      "page": "contact",
+      "key": "email",
+      "title": "邮箱",
+      "description": "联系页邮箱渠道卡片",
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "id": "bilibili",
+      "page": "contact",
+      "key": "bilibili",
+      "title": "Bilibili",
+      "description": "联系页 B站主页链接",
+      "enabled": true,
+      "order": 2
+    },
+    {
+      "id": "ggac",
+      "page": "contact",
+      "key": "ggac",
+      "title": "GGAC",
+      "description": "联系页 GGAC 作品链接",
+      "enabled": true,
+      "order": 3
+    },
+    {
+      "id": "resume-download",
+      "page": "contact",
+      "key": "resume-download",
+      "title": "简历下载",
+      "description": "联系页简历 PDF 下载入口",
+      "enabled": true,
+      "order": 4
+    },
+    {
+      "id": "contact-button",
+      "page": "contact",
+      "key": "contact-button",
+      "title": "联系按钮",
+      "description": "联系页留言表单与发送按钮",
+      "enabled": true,
+      "order": 5
+    }
+  ]
+}

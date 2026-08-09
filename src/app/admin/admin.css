@@ -1,0 +1,193 @@
+/* Portfolio CMS — scoped admin design system */
+.admin-shell {
+  --admin-bg: #050505;
+  --admin-sidebar: #070707;
+  --admin-panel: #0d0d0d;
+  --admin-panel-soft: #141414;
+  --admin-border: rgba(255, 255, 255, 0.08);
+  --admin-border-strong: rgba(255, 255, 255, 0.16);
+  --admin-text: rgba(255, 255, 255, 0.92);
+  --admin-muted: rgba(255, 255, 255, 0.56);
+  --admin-subtle: rgba(255, 255, 255, 0.36);
+  --admin-danger: #ef4444;
+  --admin-radius: 10px;
+  --admin-radius-sm: 6px;
+
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  min-height: 100vh;
+  cursor: auto;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+.admin-shell,
+.admin-shell * {
+  cursor: auto;
+}
+
+.admin-shell button,
+.admin-shell a,
+.admin-shell [role="button"],
+.admin-shell label[for],
+.admin-shell summary {
+  cursor: pointer;
+}
+
+.admin-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.admin-shell textarea,
+.admin-shell select,
+.admin-shell [contenteditable="true"] {
+  cursor: text;
+}
+
+.admin-shell .draggable,
+.admin-shell [data-draggable="true"] {
+  cursor: grab;
+}
+
+.admin-shell .dragging,
+.admin-shell [data-dragging="true"] {
+  cursor: grabbing;
+}
+
+.admin-shell input[type="checkbox"],
+.admin-shell input[type="radio"] {
+  cursor: pointer;
+}
+
+body.admin-route,
+body.admin-route * {
+  cursor: auto;
+}
+
+body.admin-route button,
+body.admin-route a,
+body.admin-route [role="button"] {
+  cursor: pointer;
+}
+
+body.admin-route input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+body.admin-route textarea,
+body.admin-route select {
+  cursor: text;
+}
+
+/* Preview window chrome */
+.admin-preview-frame {
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  background: var(--admin-panel);
+  overflow: hidden;
+}
+
+.admin-preview-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-panel-soft);
+}
+
+.admin-preview-viewport {
+  background: #0a0a0a;
+  overflow: hidden;
+  min-height: 420px;
+}
+
+.admin-preview-viewport--tablet {
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.admin-preview-viewport--mobile {
+  max-width: 390px;
+  margin: 0 auto;
+}
+
+/* Module row */
+.admin-module-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--admin-border);
+  transition: background 0.15s ease;
+}
+
+.admin-module-row:last-child {
+  border-bottom: none;
+}
+
+.admin-module-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Project pick card */
+.admin-project-pick {
+  position: relative;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  overflow: hidden;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.admin-project-pick:hover {
+  border-color: var(--admin-border-strong);
+}
+
+.admin-project-pick--selected {
+  border-color: var(--admin-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Section nav rail */
+.admin-section-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+@media (max-width: 1279px) {
+  .admin-section-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+
+  .admin-section-nav-item {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+.admin-section-nav-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--admin-muted);
+  border-radius: var(--admin-radius-sm);
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.admin-section-nav-item:hover {
+  color: var(--admin-text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-section-nav-item--active {
+  color: var(--admin-text);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--admin-border);
+}
+
+/* Table row selection */
+.admin-table-row--selected {
+  background: rgba(255, 255, 255, 0.05) !important;
+}

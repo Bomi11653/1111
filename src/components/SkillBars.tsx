@@ -1,4 +1,6 @@
-import { site } from "@/data/site";
+"use client";
+
+import { useLocale } from "@/context/LocaleContext";
 
 const iconMap: Record<string, string> = {
   Blender: "B",
@@ -8,6 +10,7 @@ const iconMap: Record<string, string> = {
 };
 
 export function SkillBars() {
+  const { site } = useLocale();
   return (
     <ul className="space-y-6">
       {site.skills.map((skill) => (

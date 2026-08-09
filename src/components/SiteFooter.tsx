@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { site } from "@/data/site";
+import { useLocale } from "@/context/LocaleContext";
 
 export function SiteFooter() {
   const pathname = usePathname();
+  const { site } = useLocale();
   const year = new Date().getFullYear();
 
   if (pathname === "/about") return null;

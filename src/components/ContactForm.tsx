@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Button } from "./ui/Button";
+import { useLocale } from "@/context/LocaleContext";
 
 export function ContactForm() {
+  const { site } = useLocale();
   const [status, setStatus] = useState<"idle" | "sent">("idle");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -17,7 +19,7 @@ export function ContactForm() {
     const body = encodeURIComponent(
       `姓名：${name}\n邮箱：${email}\n\n${message}`,
     );
-    window.location.href = `mailto:3311078363@qq.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`;
     setStatus("sent");
   }
 
@@ -58,7 +60,7 @@ export function ContactForm() {
         {status === "sent" ? "已打开邮件客户端" : "发送留言"}
       </Button>
       <p className="text-xs text-muted">
-        提交后将打开本地邮件应用；也可直接发送至 3311078363@qq.com
+        提交后将打开本地邮件应用；也可直接发送至 {site.email}
       </p>
     </form>
   );

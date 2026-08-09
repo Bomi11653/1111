@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState, startTransition } from "react";
-import { site } from "@/data/site";
+import type { HomeContent, ModulesContent, SiteContent } from "@/lib/cms-types";
 import { translations, type Locale, type TranslationKey } from "@/data/i18n";
 
 type LocaleContextValue = {
@@ -9,6 +9,9 @@ type LocaleContextValue = {
   t: TranslationKey;
   toggleLocale: () => void;
   setLocale: (locale: Locale) => void;
+  site: SiteContent;
+  home: HomeContent;
+  modules: ModulesContent;
   siteText: {
     name: string;
     title: string;
@@ -19,23 +22,36 @@ type LocaleContextValue = {
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
-const siteI18n = {
-  zh: {
-    name: site.name,
-    title: site.title,
-    tagline: site.tagline,
-    headline: site.headline,
-  },
-  en: {
-    name: site.nameEn,
-    title: "Game Environment Artist",
-    tagline: "3D Environment Art",
-    headline: "Crafting immersive game worlds through light, shadow, and detail.",
-  },
-};
+function buildSiteI18n(site: SiteContent, home: HomeContent) {
+  return {
+    zh: {
+      name: site.name,
+      title: site.title,
+      tagline: site.tagline,
+      headline: site.headline,
+    },
+    en: {
+      name: site.nameEn,
+      title: home.hero.subtitleEn,
+      tagline: home.hero.taglineEn,
+      headline: home.hero.headlineEn,
+    },
+  };
+}
 
-export function LocaleProvider({ children }: { children: React.ReactNode }) {
+export function LocaleProvider({
+  children,
+  site,
+  home,
+  modules,
+}: {
+  children: React.ReactNode;
+  site: SiteContent;
+  home: HomeContent;
+  modules: ModulesContent;
+}) {
   const [locale, setLocaleState] = useState<Locale>("zh");
+  const siteI18n = buildSiteI18n(site, home);
 
   useEffect(() => {
     const saved = localStorage.getItem("locale") as Locale | null;
@@ -63,6 +79,9 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
         t: translations[locale],
         toggleLocale,
         setLocale,
+        site,
+        home,
+        modules,
         siteText: siteI18n[locale],
       }}
     >
