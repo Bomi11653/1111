@@ -1,3 +1,4 @@
+import { blockCmsRequestInProduction } from "@/lib/local-cms";
 import { NextResponse } from "next/server";
 import {
   deleteProjectById,
@@ -12,6 +13,9 @@ export const dynamic = "force-dynamic";
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, { params }: Params) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const { id } = await params;
     const project = getProjectById(id);
@@ -28,6 +32,9 @@ export async function GET(_req: Request, { params }: Params) {
 }
 
 export async function PUT(request: Request, { params }: Params) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const { id } = await params;
     const body = (await request.json()) as Partial<CmsProject>;
@@ -42,6 +49,9 @@ export async function PUT(request: Request, { params }: Params) {
 }
 
 export async function DELETE(_req: Request, { params }: Params) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const { id } = await params;
     const removed = deleteProjectById(id);
@@ -58,6 +68,9 @@ export async function DELETE(_req: Request, { params }: Params) {
 }
 
 export async function POST(request: Request, { params }: Params) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const { id } = await params;
     const body = (await request.json()) as { action?: string };

@@ -1,3 +1,4 @@
+import { blockCmsRequestInProduction } from "@/lib/local-cms";
 import { NextResponse } from "next/server";
 import {
   createProject,
@@ -9,6 +10,9 @@ import type { CmsProject } from "@/lib/project-types";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     return NextResponse.json({ ok: true, data: getAllProjects() });
   } catch (error) {
@@ -20,6 +24,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const body = (await request.json()) as Partial<CmsProject>;
     const maxOrder = getProjectsContent().projects.reduce((m, p) => Math.max(m, p.order), 0);

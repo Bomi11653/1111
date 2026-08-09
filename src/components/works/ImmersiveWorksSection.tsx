@@ -64,7 +64,9 @@ export function ImmersiveWorksSection({ visuals }: { visuals: ImmersiveVisual[] 
   return (
     <section className="immersive-works relative min-h-[85vh] lg:min-h-screen flex flex-col lg:flex-row bg-[#0a0a0a] text-white overflow-hidden">
       <div className="absolute inset-0 z-0 lg:left-1/2 opacity-70 lg:opacity-100">
-        {displayProject ? <WorksPosterStage project={displayProject} engaged={isEngaged} /> : null}
+        {displayProject ? (
+          <WorksPosterStage key={displayProject.slug} project={displayProject} engaged={isEngaged} />
+        ) : null}
       </div>
 
       <div className="relative z-10 w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-20 py-16 lg:py-24">

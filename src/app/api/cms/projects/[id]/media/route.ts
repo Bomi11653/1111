@@ -1,3 +1,4 @@
+import { blockCmsRequestInProduction } from "@/lib/local-cms";
 import { NextResponse } from "next/server";
 import { addProjectMedia, getProjectById, updateProjectById } from "@/lib/cms";
 import { generateMediaId } from "@/lib/projectAdapter";
@@ -8,6 +9,9 @@ export const dynamic = "force-dynamic";
 type Params = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, { params }: Params) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const { id } = await params;
     const body = (await request.json()) as Partial<CmsGalleryItem | CmsProjectVideo> & {

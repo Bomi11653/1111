@@ -54,7 +54,8 @@ export function ProjectsListClient() {
   }, []);
 
   useEffect(() => {
-    load();
+    const timeoutId = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timeoutId);
   }, [load]);
 
   const categories = useMemo(() => {

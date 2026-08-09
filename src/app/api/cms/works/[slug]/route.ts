@@ -1,3 +1,4 @@
+import { blockCmsRequestInProduction } from "@/lib/local-cms";
 import { NextResponse } from "next/server";
 import {
   deleteWorkBySlug,
@@ -16,6 +17,9 @@ const deprecated = { headers: worksApiDeprecationHeaders() };
 
 /** @deprecated 请使用 GET /api/cms/projects/[id] */
 export async function GET(_request: Request, { params }: Params) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   const { slug } = await params;
   const work = getWorkBySlug(slug) ?? getWorkBySlugForPreview(slug);
   if (!work) {
@@ -29,6 +33,9 @@ export async function GET(_request: Request, { params }: Params) {
 
 /** @deprecated 请使用 PUT /api/cms/projects/[id] */
 export async function PUT(request: Request, { params }: Params) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const { slug } = await params;
     const body = (await request.json()) as WorkCatalogEntry;
@@ -53,6 +60,9 @@ export async function PUT(request: Request, { params }: Params) {
 
 /** @deprecated 请使用 DELETE /api/cms/projects/[id] */
 export async function DELETE(_request: Request, { params }: Params) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   const { slug } = await params;
   const removed = deleteWorkBySlug(slug);
   if (!removed) {

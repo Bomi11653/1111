@@ -1,9 +1,13 @@
+import { blockCmsRequestInProduction } from "@/lib/local-cms";
 import { NextResponse } from "next/server";
 import { listBackups, restoreBackup } from "@/lib/cms-backup";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const backups = listBackups();
     return NextResponse.json({ ok: true, data: backups });
@@ -16,6 +20,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const body = (await request.json()) as { backupName?: string };
     if (!body.backupName) {

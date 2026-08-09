@@ -1,9 +1,13 @@
+import { blockCmsRequestInProduction } from "@/lib/local-cms";
 import { NextResponse } from "next/server";
 import { runHealthCheck } from "@/lib/cms-health";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const report = runHealthCheck();
     return NextResponse.json({ ok: true, data: report });

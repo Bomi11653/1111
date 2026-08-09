@@ -1,3 +1,4 @@
+import { blockCmsRequestInProduction } from "@/lib/local-cms";
 import { existsSync, readdirSync, statSync, writeFileSync } from "fs";
 import path from "path";
 import { NextResponse } from "next/server";
@@ -39,6 +40,9 @@ function scanDir(dir: string, baseUrl: string): MediaFile[] {
 }
 
 export async function GET(request: Request) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const url = new URL(request.url).searchParams.get("url");
     if (url) {
@@ -69,6 +73,9 @@ const ALLOWED = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "
 const MAX_BYTES = 12 * 1024 * 1024;
 
 export async function PUT(request: Request) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const form = await request.formData();
     const file = form.get("file");
@@ -117,6 +124,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const body = (await request.json()) as { url?: string; force?: boolean };
     const url = body.url;

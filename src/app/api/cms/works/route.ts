@@ -1,3 +1,4 @@
+import { blockCmsRequestInProduction } from "@/lib/local-cms";
 import { NextResponse } from "next/server";
 import {
   getProjectBySlugFromStore,
@@ -12,6 +13,9 @@ export const dynamic = "force-dynamic";
 const deprecated = { headers: worksApiDeprecationHeaders() };
 
 export async function GET() {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     return NextResponse.json(getWorksCatalogContent(), deprecated);
   } catch (error) {
@@ -24,6 +28,9 @@ export async function GET() {
 
 /** @deprecated 请使用 PUT /api/cms/projects/[id] */
 export async function PUT(request: Request) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const body = (await request.json()) as WorksContent;
     for (const work of body.works ?? []) {
@@ -43,6 +50,9 @@ export async function PUT(request: Request) {
 
 /** @deprecated 请使用 POST /api/cms/projects */
 export async function POST(request: Request) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const body = (await request.json()) as WorkCatalogEntry;
     if (!body.slug?.trim()) {

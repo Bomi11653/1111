@@ -16,10 +16,6 @@ export function WorksPosterStage({ project, engaged }: Props) {
   const [index, setIndex] = useState(0);
   const lastMove = useRef(0);
 
-  useEffect(() => {
-    setIndex(0);
-  }, [project.slug]);
-
   const onPointerMove = useCallback(() => {
     if (!engaged || posters.length <= 1) return;
     const now = Date.now();

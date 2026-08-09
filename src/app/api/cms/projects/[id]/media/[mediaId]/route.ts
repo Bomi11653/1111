@@ -1,3 +1,4 @@
+import { blockCmsRequestInProduction } from "@/lib/local-cms";
 import { NextResponse } from "next/server";
 import { deleteProjectMedia, getProjectById, updateProjectById } from "@/lib/cms";
 
@@ -6,6 +7,9 @@ export const dynamic = "force-dynamic";
 type Params = { params: Promise<{ id: string; mediaId: string }> };
 
 export async function DELETE(_req: Request, { params }: Params) {
+  const blocked = blockCmsRequestInProduction();
+  if (blocked) return blocked;
+
   try {
     const { id, mediaId } = await params;
     const project = getProjectById(id);

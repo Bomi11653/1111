@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props) {
 export default async function ProjectDetailPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const { preview } = await searchParams;
-  const isDraftPreview = preview === "draft";
+  const isDraftPreview = process.env.NODE_ENV !== "production" && preview === "draft";
   const project = getProjectBySlug(slug, { preview: isDraftPreview });
   if (!project) notFound();
 

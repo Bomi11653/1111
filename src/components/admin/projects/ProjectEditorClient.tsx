@@ -103,7 +103,8 @@ export function ProjectEditorClient({ projectId }: Props) {
   }, [projectId]);
 
   useEffect(() => {
-    load();
+    const timeoutId = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timeoutId);
   }, [load]);
 
   const save = async (options?: { publish?: boolean }) => {

@@ -9,9 +9,16 @@ const UPLOADS_ROOT = path.join(process.cwd(), "public", "uploads");
 
 export function publicUrlToUploadPath(url: string): string | null {
   if (!url.startsWith("/uploads/")) return null;
-  const rel = url.replace(/^\//, "");
-  const full = path.normalize(path.join(process.cwd(), "public", rel));
-  if (!full.startsWith(UPLOADS_ROOT)) return null;
+  const relative = url.slice("/uploads/".length);
+  const full = path.resolve(UPLOADS_ROOT, relative);
+  const relativeToRoot = path.relative(UPLOADS_ROOT, full);
+  if (
+    !relative ||
+    relativeToRoot.startsWith("..") ||
+    path.isAbsolute(relativeToRoot)
+  ) {
+    return null;
+  }
   return full;
 }
 
