@@ -39,6 +39,12 @@ function buildSiteI18n(site: SiteContent, home: HomeContent) {
   };
 }
 
+function persistLocale(next: Locale) {
+  localStorage.setItem("locale", next);
+  document.documentElement.lang = next === "zh" ? "zh-CN" : "en";
+  document.cookie = `locale=${next};path=/;max-age=31536000;sameSite=lax`;
+}
+
 export function LocaleProvider({
   children,
   site,
@@ -59,13 +65,13 @@ export function LocaleProvider({
       startTransition(() => {
         setLocaleState(saved);
       });
+      persistLocale(saved);
     }
   }, []);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
-    localStorage.setItem("locale", next);
-    document.documentElement.lang = next === "zh" ? "zh-CN" : "en";
+    persistLocale(next);
   }, []);
 
   const toggleLocale = useCallback(() => {

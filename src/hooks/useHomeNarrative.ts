@@ -13,6 +13,16 @@ export type HomeNarrativeController = {
   setHoverBoost: (boost: number) => void;
 };
 
+function setMouseFromClient(stateRef: RefObject<SceneState>, mouse: { x: number; y: number }, clientX: number, clientY: number) {
+  mouse.x = clientX / window.innerWidth;
+  mouse.y = 1 - clientY / window.innerHeight;
+  stateRef.current.mouseUV = { x: mouse.x, y: mouse.y };
+  stateRef.current.pointer = {
+    x: mouse.x * 2 - 1,
+    y: -(mouse.y * 2 - 1),
+  };
+}
+
 export function useHomeNarrative(
   stateRef: RefObject<SceneState>,
   pageRef: RefObject<HTMLElement | null>,
@@ -25,13 +35,13 @@ export function useHomeNarrative(
     if (!root) return undefined;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const narrative = { intensity: 0.36, cameraZ: 2.65, scroll: 0 };
+    const narrative = { cameraZ: 2.65, scroll: 0 };
     const mouse = { x: 0.5, y: 0.5 };
 
     const syncState = () => {
-      stateRef.current.intensity = narrative.intensity;
       stateRef.current.cameraZ = narrative.cameraZ;
       stateRef.current.scroll = narrative.scroll;
+      stateRef.current.intensity = 1;
       stateRef.current.hoverBoost = hoverBoost.current.value;
       stateRef.current.mouseUV = { x: mouse.x, y: mouse.y };
       stateRef.current.pointer = {
@@ -45,12 +55,47 @@ export function useHomeNarrative(
     if (reduced) return undefined;
 
     const onMouseMove = (event: MouseEvent) => {
-      const x = event.clientX / window.innerWidth;
-      const y = 1 - event.clientY / window.innerHeight;
       gsap.to(mouse, {
-        x,
-        y,
-        duration: 0.42,
+        x: event.clientX / window.innerWidth,
+        y: 1 - event.clientY / window.innerHeight,
+        duration: 0.22,
+        ease: EASE_PREMIUM,
+        overwrite: "auto",
+        onUpdate: syncState,
+      });
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      setMouseFromClient(stateRef, mouse, touch.clientX, touch.clientY);
+      gsap.to(hoverBoost.current, {
+        value: 0.55,
+        duration: 0.35,
+        ease: EASE_PREMIUM,
+        overwrite: "auto",
+        onUpdate: syncState,
+      });
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (touch) {
+        setMouseFromClient(stateRef, mouse, touch.clientX, touch.clientY);
+      }
+      gsap.to(hoverBoost.current, {
+        value: 0.55,
+        duration: 0.4,
+        ease: EASE_PREMIUM,
+        overwrite: "auto",
+        onUpdate: syncState,
+      });
+    };
+
+    const onTouchEnd = () => {
+      gsap.to(hoverBoost.current, {
+        value: 0,
+        duration: 0.75,
         ease: EASE_PREMIUM,
         overwrite: "auto",
         onUpdate: syncState,
@@ -58,6 +103,9 @@ export function useHomeNarrative(
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
@@ -70,17 +118,20 @@ export function useHomeNarrative(
         onUpdate: syncState,
       });
 
-      tl.to(narrative, { cameraZ: 2.65, intensity: 0.36, scroll: 0, duration: 0.001 })
-        .to(narrative, { cameraZ: 2.38, intensity: 0.42, scroll: 0.2, duration: 0.2, ease: "none" })
-        .to(narrative, { cameraZ: 1.9, intensity: 0.62, scroll: 0.48, duration: 0.28, ease: "none" })
-        .to(narrative, { cameraZ: 1.72, intensity: 0.52, scroll: 0.72, duration: 0.24, ease: "none" })
-        .to(narrative, { cameraZ: 1.58, intensity: 0.44, scroll: 1, duration: 0.28, ease: "none" });
+      tl.to(narrative, { cameraZ: 2.65, scroll: 0, duration: 0.001 })
+        .to(narrative, { cameraZ: 2.38, scroll: 0.2, duration: 0.2, ease: "none" })
+        .to(narrative, { cameraZ: 1.9, scroll: 0.48, duration: 0.28, ease: "none" })
+        .to(narrative, { cameraZ: 1.72, scroll: 0.72, duration: 0.24, ease: "none" })
+        .to(narrative, { cameraZ: 1.58, scroll: 1, duration: 0.28, ease: "none" });
     }, root);
 
     ScrollTrigger.refresh();
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
       hoverTween.current?.kill();
       ctx.revert();
     };
@@ -99,7 +150,7 @@ export function useHomeNarrative(
   };
 
   const setHover = (hovered: boolean) => {
-    setHoverBoost(hovered ? 0.38 : 0);
+    setHoverBoost(hovered ? 0.85 : 0);
   };
 
   return { setHover, setHoverBoost };
