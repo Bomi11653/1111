@@ -90,8 +90,8 @@ export function restoreBackup(backupName: string): CmsFile {
   const sourceFile = resolveSourceFile(safeName);
   if (!sourceFile) throw new Error("无法识别备份对应的源文件");
 
-  backupContentFile(sourceFile);
   const content = readFileSync(backupPath, "utf-8");
+  backupContentFile(sourceFile);
   writeFileSync(path.join(CONTENT_DIR, sourceFile), content, "utf-8");
   return sourceFile;
 }

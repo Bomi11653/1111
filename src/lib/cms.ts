@@ -173,10 +173,13 @@ export function createProject(input: Omit<CmsProject, "id" | "createdAt" | "upda
   const now = new Date().toISOString();
   const project: CmsProject = {
     ...input,
-    id: input.id ?? generateProjectId(input.slug),
+    id: input.id?.trim() || generateProjectId(input.slug),
     createdAt: now,
     updatedAt: now,
   };
+  if (content.projects.some((item) => item.id === project.id)) {
+    throw new Error("项目 ID 已存在");
+  }
   content.projects.push(project);
   saveProjectsContent(content);
   return project;
@@ -276,6 +279,12 @@ export function duplicateProject(id: string): CmsProject {
     id: generateProjectId(`${source.slug}-copy`),
     slug: `${source.slug}-copy-${Date.now().toString(36)}`,
     title: `${source.title}（副本）`,
+    stagePosters: source.stagePosters?.map((poster) => ({
+      ...poster,
+      file: /^(\/|https?:\/\/)/i.test(poster.file)
+        ? poster.file
+        : `/works/${source.slug}/${poster.file}`,
+    })),
     published: false,
     featured: false,
     createdAt: now,

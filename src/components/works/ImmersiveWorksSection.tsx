@@ -36,9 +36,9 @@ export function ImmersiveWorksSection({ visuals }: { visuals: ImmersiveVisual[] 
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
 
   const listVisuals = filteredVisuals.length > 0 ? filteredVisuals : visuals;
-  const displaySlug = hoveredSlug ?? active.slug;
+  const displaySlug = hoveredSlug ?? active?.slug;
   const displayProject = listVisuals.find((p) => p.slug === displaySlug) ?? listVisuals[0] ?? active;
-  const isEngaged = hoveredSlug !== null || active.slug === displayProject?.slug;
+  const isEngaged = hoveredSlug !== null || active?.slug === displayProject?.slug;
 
   const handleEnter = (project: ImmersiveVisual) => {
     if (isTransitioning) return;
@@ -53,10 +53,10 @@ export function ImmersiveWorksSection({ visuals }: { visuals: ImmersiveVisual[] 
     );
   };
 
-  if (!showList) {
+  if (!showList || visuals.length === 0) {
     return (
       <section className="immersive-works relative min-h-[50vh] flex items-center justify-center bg-[#0a0a0a] text-white">
-        <p className="text-white/35 text-sm">作品列表模块已隐藏</p>
+        <p className="text-white/35 text-sm">{showList ? "作品整理中" : "作品列表模块已隐藏"}</p>
       </section>
     );
   }

@@ -21,7 +21,7 @@ function workBase(slug: string): string {
 }
 
 function resolvePosterUrl(slug: string, file: string): string {
-  if (file.startsWith("/uploads/") || file.startsWith("http")) return file;
+  if (file.startsWith("/") || file.startsWith("http")) return file;
   return `${workBase(slug)}/${file}`;
 }
 
